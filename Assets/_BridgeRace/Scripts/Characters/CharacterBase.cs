@@ -5,6 +5,7 @@ public abstract class CharacterBase : MonoBehaviour
 {
     [Header("Character Settings")]
     [SerializeField] private TeamColor teamColor = TeamColor.Blue;
+    public TeamColor CharacterTeamColor => teamColor;
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -49,7 +50,8 @@ public abstract class CharacterBase : MonoBehaviour
             return;
         }
 
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+        Quaternion targetRotation =
+            Quaternion.LookRotation(moveDirection);
 
         Quaternion newRotation = Quaternion.Slerp(
             rb.rotation,
