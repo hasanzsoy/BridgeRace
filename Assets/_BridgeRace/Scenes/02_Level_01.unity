@@ -4895,6 +4895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 800809428}
   - component: {fileID: 800809429}
+  - component: {fileID: 800809430}
   m_Layer: 0
   m_Name: BrickSpawnArea_Middle
   m_TagString: Untagged
@@ -4938,6 +4939,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 20, y: 1, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &800809430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 800809427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a10461f42bf7b184c9cca36264a76fa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrickSpawner
+  brickPoolManager: {fileID: 355835632}
+  spawnArea: {fileID: 800809429}
+  blueBrickAmount: 8
+  redBrickAmount: 8
+  greenBrickAmount: 8
+  yellowBrickAmount: 8
+  columns: 8
+  edgeMargin: 1
+  randomizeColors: 1
+  respawnDelay: 2.5
+  spawnHeightOffset: 0.05
 --- !u!1001 &805839068
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6831,11 +6855,42 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1019641804}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1033076407 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+  m_PrefabInstance: {fileID: 804678668970466516}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1033076408 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
   m_PrefabInstance: {fileID: 804678668970466516}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1033076414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033076407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 156d8483e01a5a14797eaefbf76a49b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCollectDetector
+--- !u!114 &1033076415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033076407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5215c537491d32e44a235b89432a7157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterStack
+  stackPoint: {fileID: 2134958475}
+  verticalSpacing: 0.28
 --- !u!1001 &1035657734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7580,6 +7635,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1177964737}
   - component: {fileID: 1177964738}
+  - component: {fileID: 1177964739}
   m_Layer: 0
   m_Name: BrickSpawnArea_Start
   m_TagString: Untagged
@@ -7623,6 +7679,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 22, y: 1, z: 20}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1177964739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177964736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a10461f42bf7b184c9cca36264a76fa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrickSpawner
+  brickPoolManager: {fileID: 355835632}
+  spawnArea: {fileID: 1177964738}
+  blueBrickAmount: 12
+  redBrickAmount: 12
+  greenBrickAmount: 12
+  yellowBrickAmount: 12
+  columns: 8
+  edgeMargin: 1
+  randomizeColors: 1
+  respawnDelay: 2.5
+  spawnHeightOffset: 0.05
 --- !u!1001 &1182407302
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10692,6 +10771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1673355328}
+  - component: {fileID: 1673355329}
   m_Layer: 0
   m_Name: '--- GAME ---  '
   m_TagString: Untagged
@@ -10714,6 +10794,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1673355329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673355327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ff620b0411c6ea4cb9da8564274c637, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventDebugListener
 --- !u!1 &1677240241
 GameObject:
   m_ObjectHideFlags: 0
@@ -13598,6 +13690,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2134816527}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &2134958475 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 879758512500523115, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+  m_PrefabInstance: {fileID: 804678668970466516}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &804678668970466516
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13609,6 +13706,14 @@ PrefabInstance:
     - target: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_Name
       value: Player_Blue
+      objectReference: {fileID: 0}
+    - target: {fileID: 879758512500523115, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 879758512500523115, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.65
       objectReference: {fileID: 0}
     - target: {fileID: 2386283602993456590, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: dynamicJoystick
@@ -13657,7 +13762,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1033076415}
+    - targetCorrespondingSourceObject: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1033076414}
   m_SourcePrefab: {fileID: 100100000, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

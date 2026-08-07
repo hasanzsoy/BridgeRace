@@ -5,11 +5,106 @@ public class Brick : MonoBehaviour, ICollectable
     [Header("Brick Settings")]
     [SerializeField] private TeamColor brickColor;
 
-    public TeamColor CollectableColor => brickColor;
+    private Collider brickCollider;
+
+    private BrickSpawner ownerSpawner;
+
+    private int ownerSlotIndex = -1;
+
+    private bool isCollected;
 
 
-    public void Collect(CharacterBase collector)
+    public TeamColor CollectableColor =>
+        brickColor;
+
+
+    private void Awake()
     {
-        // Gün 7'de tuğla toplama ve stacking sistemi burada çalışacak.
+        brickCollider =
+            GetComponent<Collider>();
+    }
+
+
+    private void OnEnable()
+    {
+        isCollected = false;
+
+        if (brickCollider != null)
+        {
+            brickCollider.enabled = true;
+        }
+    }
+
+
+    public void SetSpawner(
+        BrickSpawner spawner,
+        int slotIndex)
+    {
+        ownerSpawner = spawner;
+
+        ownerSlotIndex = slotIndex;
+    }
+
+
+    public void Collect(
+        CharacterBase collector)
+    {
+        if (isCollected)
+        {
+            return;
+        }
+
+
+        if (collector == null)
+        {
+            return;
+        }
+
+
+        if (collector.CharacterTeamColor !=
+            brickColor)
+        {
+            return;
+        }
+
+
+        if (!collector.TryGetComponent<CharacterStack>(
+                out CharacterStack characterStack))
+        {
+            return;
+        }
+
+
+        isCollected = true;
+
+
+        if (brickCollider != null)
+        {
+            brickCollider.enabled = false;
+        }
+
+
+        BrickSpawner previousSpawner =
+            ownerSpawner;
+
+        int previousSlotIndex =
+            ownerSlotIndex;
+
+
+        ownerSpawner = null;
+
+        ownerSlotIndex = -1;
+
+
+        characterStack.AddBrick(this);
+
+
+        if (previousSpawner != null)
+        {
+            previousSpawner.BrickCollected(
+                brickColor,
+                previousSlotIndex
+            );
+        }
     }
 }
