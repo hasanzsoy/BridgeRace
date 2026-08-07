@@ -1,4 +1,6 @@
+using DG.Tweening;
 using UnityEngine;
+
 
 public class Brick : MonoBehaviour, ICollectable
 {
@@ -35,6 +37,11 @@ public class Brick : MonoBehaviour, ICollectable
         }
     }
 
+
+    private void OnDisable()
+    {
+        transform.DOKill();
+    }
 
     public void SetSpawner(
         BrickSpawner spawner,
