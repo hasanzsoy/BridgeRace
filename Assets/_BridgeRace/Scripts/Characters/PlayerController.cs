@@ -2,23 +2,47 @@ using UnityEngine;
 
 public class PlayerController : CharacterBase
 {
-    private float horizontalInput;
-    private float verticalInput;
+    [Header("Mobile Input")]
+    [SerializeField] private DynamicJoystick dynamicJoystick;
+
+    [Header("Editor Test")]
+    [SerializeField] private bool keyboardTestEnabled = true;
+
 
     private void Update()
     {
-        GetInput();
-    }
+        Vector2 input = Vector2.zero;
 
-    private void GetInput()
-    {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        if (dynamicJoystick != null)
+        {
+            input = dynamicJoystick.InputDirection;
+        }
+
+
+#if UNITY_EDITOR
+
+        if (input == Vector2.zero &&
+            keyboardTestEnabled)
+        {
+            float horizontalInput =
+                Input.GetAxisRaw("Horizontal");
+
+            float verticalInput =
+                Input.GetAxisRaw("Vertical");
+
+            input = new Vector2(
+                horizontalInput,
+                verticalInput
+            );
+        }
+
+#endif
+
 
         Vector3 direction = new Vector3(
-            horizontalInput,
+            input.x,
             0f,
-            verticalInput
+            input.y
         );
 
         SetMoveDirection(direction);
