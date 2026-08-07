@@ -2,80 +2,25 @@ using UnityEngine;
 
 public class PlayerController : CharacterBase
 {
-    [Header("Editor Test Settings")]
-    [SerializeField] private bool keyboardTestEnabled = true;
-
-    private Vector2 keyboardInput;
-    private Vector2 mobileInput;
+    private float horizontalInput;
+    private float verticalInput;
 
     private void Update()
     {
-        ReadKeyboardInput();
-        SendMovementToCharacter();
+        GetInput();
     }
 
-    private void ReadKeyboardInput()
+    private void GetInput()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
-        if (keyboardTestEnabled)
-        {
-            float horizontalInput =
-                Input.GetAxisRaw("Horizontal");
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-            float verticalInput =
-                Input.GetAxisRaw("Vertical");
-
-            keyboardInput = new Vector2(
-                horizontalInput,
-                verticalInput
-            );
-
-            keyboardInput = Vector2.ClampMagnitude(
-                keyboardInput,
-                1f
-            );
-        }
-        else
-        {
-            keyboardInput = Vector2.zero;
-        }
-#else
-        keyboardInput = Vector2.zero;
-#endif
-    }
-
-    private void SendMovementToCharacter()
-    {
-        Vector2 selectedInput;
-
-        if (mobileInput.sqrMagnitude > 0.001f)
-        {
-            selectedInput = mobileInput;
-        }
-        else
-        {
-            selectedInput = keyboardInput;
-        }
-
-        Vector3 movementDirection = new Vector3(
-            selectedInput.x,
+        Vector3 direction = new Vector3(
+            horizontalInput,
             0f,
-            selectedInput.y
+            verticalInput
         );
 
-        SetMoveDirection(movementDirection);
-    }
-
-    public void SetMobileMovementInput(Vector2 input)
-    {
-        mobileInput = Vector2.ClampMagnitude(
-            input,
-            1f
-        );
-    }
-
-    public void StopMobileMovement()
-    {
-        mobileInput = Vector2.zero;
+        SetMoveDirection(direction);
     }
 }

@@ -3,9 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public abstract class CharacterBase : MonoBehaviour
 {
-    private static readonly int IsMovingHash =
-        Animator.StringToHash("IsMoving");
-
     [Header("Character Settings")]
     [SerializeField] private TeamColor teamColor = TeamColor.Blue;
 
@@ -13,36 +10,13 @@ public abstract class CharacterBase : MonoBehaviour
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected float rotationSpeed = 12f;
 
-    [Header("Animation Settings")]
-    [SerializeField] protected Animator characterAnimator;
-
-    protected Rigidbody characterRigidbody;
+    protected Rigidbody rb;
 
     private Vector3 moveDirection;
 
-    public TeamColor CharacterTeamColor => teamColor;
-
-    public Vector3 MoveDirection => moveDirection;
-
-    public bool IsMoving =>
-        moveDirection.sqrMagnitude > 0.001f;
-
     protected virtual void Awake()
     {
-        characterRigidbody = GetComponent<Rigidbody>();
-
-        if (characterAnimator == null)
-        {
-            characterAnimator = GetComponentInChildren<Animator>();
-        }
-
-        if (characterAnimator == null)
-        {
-            Debug.LogError(
-                $"{gameObject.name} nesnesinde Animator bulunamadı!",
-                gameObject
-            );
-        }
+        rb = GetComponent<Rigidbody>();
     }
 
     protected virtual void FixedUpdate()
@@ -55,69 +29,34 @@ public abstract class CharacterBase : MonoBehaviour
     {
         direction.y = 0f;
 
-        moveDirection = Vector3.ClampMagnitude(direction, 1f);
-
-        UpdateMovementAnimation();
+        moveDirection = direction.normalized;
     }
 
     private void MoveCharacter()
     {
-        Vector3 currentVelocity =
-            characterRigidbody.linearVelocity;
+        Vector3 velocity = rb.linearVelocity;
 
-        Vector3 targetVelocity = new Vector3(
-            moveDirection.x * moveSpeed,
-            currentVelocity.y,
-            moveDirection.z * moveSpeed
-        );
+        velocity.x = moveDirection.x * moveSpeed;
+        velocity.z = moveDirection.z * moveSpeed;
 
-        characterRigidbody.linearVelocity = targetVelocity;
+        rb.linearVelocity = velocity;
     }
 
     private void RotateCharacter()
     {
-        if (!IsMoving)
+        if (moveDirection == Vector3.zero)
         {
             return;
         }
 
-        Quaternion targetRotation = Quaternion.LookRotation(
-            moveDirection,
-            Vector3.up
-        );
+        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
 
-        Quaternion smoothRotation = Quaternion.Slerp(
-            characterRigidbody.rotation,
+        Quaternion newRotation = Quaternion.Slerp(
+            rb.rotation,
             targetRotation,
             rotationSpeed * Time.fixedDeltaTime
         );
 
-        characterRigidbody.MoveRotation(smoothRotation);
-    }
-
-    private void UpdateMovementAnimation()
-    {
-        if (characterAnimator == null)
-        {
-            return;
-        }
-
-        characterAnimator.SetBool(
-            IsMovingHash,
-            IsMoving
-        );
-    }
-
-    protected virtual void OnDisable()
-    {
-        moveDirection = Vector3.zero;
-
-        if (characterAnimator != null)
-        {
-            characterAnimator.SetBool(
-                IsMovingHash,
-                false
-            );
-        }
+        rb.MoveRotation(newRotation);
     }
 }
