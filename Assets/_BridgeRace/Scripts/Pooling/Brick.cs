@@ -1,7 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
 
-
 public class Brick : MonoBehaviour, ICollectable
 {
     [Header("Brick Settings")]
@@ -43,6 +42,7 @@ public class Brick : MonoBehaviour, ICollectable
         transform.DOKill();
     }
 
+
     public void SetSpawner(
         BrickSpawner spawner,
         int slotIndex)
@@ -61,19 +61,16 @@ public class Brick : MonoBehaviour, ICollectable
             return;
         }
 
-
         if (collector == null)
         {
             return;
         }
-
 
         if (collector.CharacterTeamColor !=
             brickColor)
         {
             return;
         }
-
 
         if (!collector.TryGetComponent<CharacterStack>(
                 out CharacterStack characterStack))
@@ -112,6 +109,35 @@ public class Brick : MonoBehaviour, ICollectable
                 brickColor,
                 previousSlotIndex
             );
+        }
+    }
+
+
+    public void PrepareForDrop()
+    {
+        transform.DOKill();
+
+        ownerSpawner = null;
+
+        ownerSlotIndex = -1;
+
+        isCollected = false;
+
+
+        if (brickCollider != null)
+        {
+            brickCollider.enabled = false;
+        }
+    }
+
+
+    public void EnableCollection()
+    {
+        isCollected = false;
+
+        if (brickCollider != null)
+        {
+            brickCollider.enabled = true;
         }
     }
 }

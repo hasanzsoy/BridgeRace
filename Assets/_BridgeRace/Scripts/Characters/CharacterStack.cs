@@ -15,29 +15,47 @@ public class CharacterStack : MonoBehaviour
     [SerializeField] private float collectDuration = 0.25f;
     [SerializeField] private float jumpPower = 0.5f;
 
-    private List<Brick> collectedBricks = new List<Brick>();
+    [Header("Drop Settings")]
+    [SerializeField] private float dropDuration = 0.35f;
+    [SerializeField] private float dropJumpPower = 0.6f;
+
+    [SerializeField] private float dropMinDistance = 1.3f;
+    [SerializeField] private float dropMaxDistance = 2.2f;
+
+    [SerializeField] private float dropGroundOffset = 0.875f;
+
+
+    private List<Brick> collectedBricks =
+        new List<Brick>();
 
     private CharacterBase ownerCharacter;
 
-    public int BrickCount => collectedBricks.Count;
+
+    public int BrickCount =>
+        collectedBricks.Count;
 
 
     private void Awake()
     {
-        ownerCharacter = GetComponent<CharacterBase>();
+        ownerCharacter =
+            GetComponent<CharacterBase>();
+
 
         if (stackPoint == null)
         {
             Debug.LogError(
-                gameObject.name + " için StackPoint atanmadı!"
+                gameObject.name +
+                " için StackPoint atanmadı!"
             );
         }
+
 
         if (brickPoolManager == null)
         {
             brickPoolManager =
                 FindFirstObjectByType<BrickPoolManager>();
         }
+
 
         if (brickPoolManager == null)
         {
@@ -61,8 +79,10 @@ public class CharacterStack : MonoBehaviour
             return;
         }
 
+
         int brickIndex =
             collectedBricks.Count;
+
 
         collectedBricks.Add(brick);
 
@@ -76,6 +96,7 @@ public class CharacterStack : MonoBehaviour
 
 
         brick.transform.DOKill();
+
 
         brick.transform.SetParent(
             stackPoint,
@@ -146,5 +167,121 @@ public class CharacterStack : MonoBehaviour
 
 
         return true;
+    }
+
+
+    public int DropBricks(int amount)
+    {
+        if (amount <= 0)
+        {
+            return 0;
+        }
+
+        if (collectedBricks.Count <= 0)
+        {
+            return 0;
+        }
+
+
+        int dropCount = Mathf.Min(
+            amount,
+            collectedBricks.Count
+        );
+
+
+        float startAngle =
+            Random.Range(0f, 360f);
+
+
+        for (int i = 0; i < dropCount; i++)
+        {
+            int lastIndex =
+                collectedBricks.Count - 1;
+
+
+            Brick brickToDrop =
+                collectedBricks[lastIndex];
+
+
+            collectedBricks.RemoveAt(
+                lastIndex
+            );
+
+
+            brickToDrop.transform.DOKill();
+
+            brickToDrop.PrepareForDrop();
+
+
+            brickToDrop.transform.SetParent(
+                null,
+                true
+            );
+
+
+            float angle =
+                startAngle +
+                (360f / dropCount) * i;
+
+
+            float angleRad =
+                angle * Mathf.Deg2Rad;
+
+
+            Vector3 direction =
+                new Vector3(
+                    Mathf.Cos(angleRad),
+                    0f,
+                    Mathf.Sin(angleRad)
+                );
+
+
+            float distance =
+                Random.Range(
+                    dropMinDistance,
+                    dropMaxDistance
+                );
+
+
+            Vector3 targetPosition =
+                transform.position +
+                direction * distance;
+
+
+            targetPosition.y =
+                transform.position.y -
+                dropGroundOffset;
+
+
+            brickToDrop.transform.DOJump(
+                targetPosition,
+                dropJumpPower,
+                1,
+                dropDuration
+            )
+            .SetEase(Ease.OutQuad)
+            .OnComplete(
+                brickToDrop.EnableCollection
+            );
+
+
+            brickToDrop.transform.DORotate(
+                new Vector3(
+                    0f,
+                    Random.Range(0f, 360f),
+                    0f
+                ),
+                dropDuration
+            );
+        }
+
+
+        EventManager.BrickDropped(
+            ownerCharacter,
+            BrickCount
+        );
+
+
+        return dropCount;
     }
 }
