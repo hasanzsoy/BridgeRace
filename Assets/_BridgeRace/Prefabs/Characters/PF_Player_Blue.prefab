@@ -14,6 +14,12 @@ GameObject:
   - component: {fileID: 1061837387178112921}
   - component: {fileID: 5408155303520235784}
   - component: {fileID: 2386283602993456590}
+  - component: {fileID: 8873581146131242127}
+  - component: {fileID: 2884959971089984753}
+  - component: {fileID: 3289401768069007781}
+  - component: {fileID: 459364813376529475}
+  - component: {fileID: 3768793633792381018}
+  - component: {fileID: 8375117697344994004}
   m_Layer: 0
   m_Name: PF_Player_Blue
   m_TagString: Untagged
@@ -37,6 +43,7 @@ Transform:
   - {fileID: 2589662202818033768}
   - {fileID: 879758512500523115}
   - {fileID: 4058214545713338585}
+  - {fileID: 5014354796591464482}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1360354611670714018
@@ -160,6 +167,98 @@ MonoBehaviour:
   teamColor: 0
   moveSpeed: 5
   rotationSpeed: 12
+  dynamicJoystick: {fileID: 0}
+  keyboardTestEnabled: 1
+--- !u!114 &8873581146131242127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5215c537491d32e44a235b89432a7157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterStack
+  stackPoint: {fileID: 879758512500523115}
+  brickPoolManager: {fileID: 0}
+  verticalSpacing: 0.28
+  collectDuration: 0.25
+  jumpPower: 0.5
+  dropDuration: 0.35
+  dropJumpPower: 0.6
+  dropMinDistance: 1.3
+  dropMaxDistance: 2.2
+  dropGroundOffset: 0.875
+--- !u!114 &2884959971089984753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 156d8483e01a5a14797eaefbf76a49b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCollectDetector
+--- !u!114 &3289401768069007781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37d2ef82e4758d94d8d8671e7da58f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterBridgeBuilder
+  rayOrigin: {fileID: 5014354796591464482}
+  rayDistance: 1.5
+--- !u!114 &459364813376529475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56c9a26ede4849d4788f557ef5fc43ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterRespawn
+  startingRespawnPoint: {fileID: 0}
+--- !u!114 &3768793633792381018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6e5010f33012f4097367d907f78d0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterKnockback
+  controlLockDuration: 0.35
+  bricksToDrop: 3
+--- !u!114 &8375117697344994004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561359722331499075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937284dcb02dd724e8b3f4550a71a5eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCollisionDetector
+  minimumImpactSpeed: 2
+  horizontalKnockbackForce: 7.5
+  upwardKnockbackForce: 2.2
 --- !u!1 &2300436774643598922
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +373,7 @@ Transform:
   m_GameObject: {fileID: 2781434407008941772}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.6}
+  m_LocalPosition: {x: 0, y: -0.35, z: -0.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -306,6 +405,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2731348021033975257}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8775813631400119139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5014354796591464482}
+  m_Layer: 0
+  m_Name: BuildRayOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5014354796591464482
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8775813631400119139}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.6, z: 0.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
