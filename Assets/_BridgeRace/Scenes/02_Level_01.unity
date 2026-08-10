@@ -913,7 +913,7 @@ Transform:
   m_GameObject: {fileID: 81569180}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4, y: 1.62, z: -8}
+  m_LocalPosition: {x: -4.5, y: 1.62, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11412,7 +11412,7 @@ Transform:
   m_GameObject: {fileID: 852230665}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 1.62, z: -8}
+  m_LocalPosition: {x: 1.5, y: 1.62, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14391,7 +14391,7 @@ Transform:
   m_GameObject: {fileID: 1021378435}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.62, z: -8}
+  m_LocalPosition: {x: -1.5, y: 1.62, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17191,13 +17191,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: AI_Green
       objectReference: {fileID: 0}
+    - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 9a745f4c2ee3a7b41919dbb6905bc819, type: 2}
     - target: {fileID: 2386283602993456590, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: dynamicJoystick
       value: 
       objectReference: {fileID: 1573019569}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -20349,13 +20353,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: AI_Red
       objectReference: {fileID: 0}
+    - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 9a745f4c2ee3a7b41919dbb6905bc819, type: 2}
     - target: {fileID: 2386283602993456590, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: dynamicJoystick
       value: 
       objectReference: {fileID: 1573019569}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4
+      value: -4.5
       objectReference: {fileID: 0}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22087,7 +22095,7 @@ Transform:
   m_GameObject: {fileID: 1640512991}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8, y: 1.62, z: -8}
+  m_LocalPosition: {x: 4.5, y: 1.62, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24252,13 +24260,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: AI_Yellow
       objectReference: {fileID: 0}
+    - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 9a745f4c2ee3a7b41919dbb6905bc819, type: 2}
     - target: {fileID: 2386283602993456590, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: dynamicJoystick
       value: 
       objectReference: {fileID: 1573019569}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -27946,13 +27958,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player_Blue
       objectReference: {fileID: 0}
+    - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 9a745f4c2ee3a7b41919dbb6905bc819, type: 2}
     - target: {fileID: 2386283602993456590, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: dynamicJoystick
       value: 
       objectReference: {fileID: 1573019569}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalPosition.y
