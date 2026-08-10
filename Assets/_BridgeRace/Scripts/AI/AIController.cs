@@ -20,44 +20,66 @@ public class AIController : CharacterBase
     [Header("AI References")]
     [SerializeField] private CharacterStack characterStack;
 
+
     [Header("Brick Areas")]
     [SerializeField] private BoxCollider startBrickArea;
     [SerializeField] private BoxCollider middleBrickArea;
+
 
     [Header("Bridge 1 Route")]
     [SerializeField] private Transform bridge1Start;
     [SerializeField] private Transform bridge1End;
 
+
     [Header("Bridge 2 Route")]
     [SerializeField] private Transform bridge2Start;
     [SerializeField] private Transform bridge2End;
 
+
     [Header("Finish")]
     [SerializeField] private Transform finishTarget;
 
+
     [Header("AI Settings")]
     [SerializeField] private int bricksNeededForBridge = 20;
+
     [SerializeField] private float pointReachedDistance = 0.8f;
-    [SerializeField] private float brickSearchInterval = 0.25f;
+
+
+    [Header("Difficulty")]
+    [SerializeField] private AIDifficulty difficulty = AIDifficulty.Normal;
+
+    [SerializeField] private float easyMoveSpeed = 4.2f;
+    [SerializeField] private float normalMoveSpeed = 5f;
+    [SerializeField] private float hardMoveSpeed = 5.7f;
+
+    [SerializeField] private float easySearchInterval = 0.45f;
+    [SerializeField] private float normalSearchInterval = 0.25f;
+    [SerializeField] private float hardSearchInterval = 0.12f;
 
 
     private AIState currentState =
         AIState.CollectingStart;
 
+
     private Brick targetBrick;
 
     private float nextBrickSearchTime;
+
+    private float brickSearchInterval;
 
 
     protected override void Awake()
     {
         base.Awake();
 
+
         if (characterStack == null)
         {
             characterStack =
                 GetComponent<CharacterStack>();
         }
+
 
         if (characterStack == null)
         {
@@ -66,6 +88,9 @@ public class AIController : CharacterBase
                 " üzerinde CharacterStack bulunamadı!"
             );
         }
+
+
+        ApplyDifficulty();
     }
 
 
@@ -165,6 +190,45 @@ public class AIController : CharacterBase
     }
 
 
+    private void ApplyDifficulty()
+    {
+        switch (difficulty)
+        {
+            case AIDifficulty.Easy:
+
+                moveSpeed =
+                    easyMoveSpeed;
+
+                brickSearchInterval =
+                    easySearchInterval;
+
+                break;
+
+
+            case AIDifficulty.Normal:
+
+                moveSpeed =
+                    normalMoveSpeed;
+
+                brickSearchInterval =
+                    normalSearchInterval;
+
+                break;
+
+
+            case AIDifficulty.Hard:
+
+                moveSpeed =
+                    hardMoveSpeed;
+
+                brickSearchInterval =
+                    hardSearchInterval;
+
+                break;
+        }
+    }
+
+
     private void CollectBricks(
         BoxCollider brickArea,
         AIState nextState)
@@ -209,6 +273,7 @@ public class AIController : CharacterBase
                     FindNearestBrick(
                         brickArea
                     );
+
 
                 nextBrickSearchTime =
                     Time.time +
@@ -353,6 +418,7 @@ public class AIController : CharacterBase
         bool insideX =
             position.x >= bounds.min.x &&
             position.x <= bounds.max.x;
+
 
         bool insideZ =
             position.z >= bounds.min.z &&
