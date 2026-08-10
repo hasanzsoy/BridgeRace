@@ -8,14 +8,31 @@ public class CharacterBridgeBuilder : MonoBehaviour
     [Header("Raycast Settings")]
     [SerializeField] private float rayDistance = 1.5f;
 
+
     private CharacterBase character;
+
     private CharacterStack characterStack;
+
+
+    public bool IsForwardBlocked
+    {
+        get;
+        private set;
+    }
+
+
+    public Vector3 BlockedDirection
+    {
+        get;
+        private set;
+    }
 
 
     private void Awake()
     {
         character =
             GetComponent<CharacterBase>();
+
 
         characterStack =
             GetComponent<CharacterStack>();
@@ -49,14 +66,15 @@ public class CharacterBridgeBuilder : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
+    public void RefreshBridgeCheck()
     {
-        CheckBridgeStep();
-    }
+        // Her kontrolde önce engeli temizliyoruz.
+        IsForwardBlocked = false;
+
+        BlockedDirection =
+            Vector3.zero;
 
 
-    private void CheckBridgeStep()
-    {
         if (rayOrigin == null)
         {
             return;
@@ -65,7 +83,8 @@ public class CharacterBridgeBuilder : MonoBehaviour
 
         Debug.DrawRay(
             rayOrigin.position,
-            Vector3.down * rayDistance,
+            Vector3.down *
+            rayDistance,
             Color.red
         );
 
@@ -81,16 +100,18 @@ public class CharacterBridgeBuilder : MonoBehaviour
             if (hit.collider.TryGetComponent<IBuildable>(
                     out IBuildable buildable))
             {
-                TryBuild(
-                    buildable
+                CheckBuildable(
+                    buildable,
+                    hit.point
                 );
             }
         }
     }
 
 
-    private void TryBuild(
-        IBuildable buildable)
+    private void CheckBuildable(
+        IBuildable buildable,
+        Vector3 hitPoint)
     {
         if (character == null ||
             characterStack == null)
@@ -103,6 +124,8 @@ public class CharacterBridgeBuilder : MonoBehaviour
             character.CharacterTeamColor;
 
 
+        // Step zaten bizim rengimizse
+        // rahatça yürüyebiliriz.
         if (!buildable.NeedsBuild(
                 characterColor))
         {
@@ -110,18 +133,75 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
+        // Rakip Step veya boş Step var.
+        // Brick yoksa ileri hareketi engelle.
+        if (characterStack.BrickCount <= 0)
+        {
+            BlockMovement(
+                hitPoint
+            );
+
+            return;
+        }
+
+
+        // Brick harcamayı dene.
         bool brickSpent =
             characterStack.TrySpendBrick();
 
 
         if (!brickSpent)
         {
+            BlockMovement(
+                hitPoint
+            );
+
             return;
         }
 
 
+        // Brick varsa Step'i
+        // kendi rengimize çevir.
         buildable.BuildStep(
             characterColor
         );
+    }
+
+
+    private void BlockMovement(
+        Vector3 hitPoint)
+    {
+        Vector3 direction =
+            hitPoint -
+            transform.position;
+
+
+        direction.y = 0f;
+
+
+        if (direction.sqrMagnitude <
+            0.001f)
+        {
+            direction =
+                transform.forward;
+        }
+
+
+        IsForwardBlocked =
+            true;
+
+
+        BlockedDirection =
+            direction.normalized;
+    }
+
+
+    private void OnDisable()
+    {
+        IsForwardBlocked =
+            false;
+
+        BlockedDirection =
+            Vector3.zero;
     }
 }

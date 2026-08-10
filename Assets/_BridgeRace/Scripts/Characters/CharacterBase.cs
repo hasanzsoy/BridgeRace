@@ -16,6 +16,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     private bool movementEnabled = true;
 
+    private CharacterBridgeBuilder bridgeBuilder;
+
 
     public TeamColor CharacterTeamColor => teamColor;
 
@@ -23,6 +25,9 @@ public abstract class CharacterBase : MonoBehaviour
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        bridgeBuilder =
+            GetComponent<CharacterBridgeBuilder>();
     }
 
 
@@ -33,64 +38,162 @@ public abstract class CharacterBase : MonoBehaviour
             return;
         }
 
-        MoveCharacter();
-        RotateCharacter();
-    }
 
-
-    protected void SetMoveDirection(Vector3 direction)
-    {
-        if (!movementEnabled)
+        // Hareket etmeden önce önümüzdeki
+        // köprü basamağını kontrol ediyoruz.
+        if (bridgeBuilder != null)
         {
-            moveDirection = Vector3.zero;
-            return;
+            bridgeBuilder.RefreshBridgeCheck();
         }
 
-        direction.y = 0f;
 
-        moveDirection = Vector3.ClampMagnitude(
-            direction,
-            1f
+        Vector3 allowedDirection =
+            GetAllowedMoveDirection();
+
+
+        MoveCharacter(
+            allowedDirection
+        );
+
+
+        RotateCharacter(
+            allowedDirection
         );
     }
 
 
-    public void SetMovementEnabled(bool enabled)
+    protected void SetMoveDirection(
+        Vector3 direction)
     {
-        movementEnabled = enabled;
+        if (!movementEnabled)
+        {
+            moveDirection =
+                Vector3.zero;
+
+            return;
+        }
+
+
+        direction.y = 0f;
+
+
+        moveDirection =
+            Vector3.ClampMagnitude(
+                direction,
+                1f
+            );
+    }
+
+
+    public void SetMovementEnabled(
+        bool enabled)
+    {
+        movementEnabled =
+            enabled;
+
 
         if (!movementEnabled)
         {
-            moveDirection = Vector3.zero;
+            moveDirection =
+                Vector3.zero;
         }
     }
 
 
-    private void MoveCharacter()
+    private Vector3 GetAllowedMoveDirection()
     {
-        Vector3 velocity = rb.linearVelocity;
+        Vector3 allowedDirection =
+            moveDirection;
 
-        velocity.x =
-            moveDirection.x * moveSpeed;
 
-        velocity.z =
-            moveDirection.z * moveSpeed;
+        if (bridgeBuilder == null)
+        {
+            return allowedDirection;
+        }
 
-        rb.linearVelocity = velocity;
+
+        if (!bridgeBuilder.IsForwardBlocked)
+        {
+            return allowedDirection;
+        }
+
+
+        Vector3 blockedDirection =
+            bridgeBuilder.BlockedDirection;
+
+
+        blockedDirection.y = 0f;
+
+
+        if (blockedDirection.sqrMagnitude <
+            0.001f)
+        {
+            return allowedDirection;
+        }
+
+
+        blockedDirection.Normalize();
+
+
+        float movingTowardBlockedStep =
+            Vector3.Dot(
+                allowedDirection,
+                blockedDirection
+            );
+
+
+        // Karakter yasak olan basamağa
+        // doğru hareket ediyorsa,
+        // o yöndeki hareketi kaldırıyoruz.
+        if (movingTowardBlockedStep > 0f)
+        {
+            allowedDirection -=
+                blockedDirection *
+                movingTowardBlockedStep;
+        }
+
+
+        return allowedDirection;
     }
 
 
-    private void RotateCharacter()
+    private void MoveCharacter(
+        Vector3 allowedDirection)
     {
-        if (moveDirection == Vector3.zero)
+        Vector3 velocity =
+            rb.linearVelocity;
+
+
+        velocity.x =
+            allowedDirection.x *
+            moveSpeed;
+
+
+        velocity.z =
+            allowedDirection.z *
+            moveSpeed;
+
+
+        rb.linearVelocity =
+            velocity;
+    }
+
+
+    private void RotateCharacter(
+        Vector3 allowedDirection)
+    {
+        if (allowedDirection ==
+            Vector3.zero)
         {
             return;
         }
 
+
         Quaternion targetRotation =
             Quaternion.LookRotation(
-                moveDirection
+                allowedDirection
             );
+
 
         Quaternion newRotation =
             Quaternion.Slerp(
@@ -100,6 +203,9 @@ public abstract class CharacterBase : MonoBehaviour
                 Time.fixedDeltaTime
             );
 
-        rb.MoveRotation(newRotation);
+
+        rb.MoveRotation(
+            newRotation
+        );
     }
 }
