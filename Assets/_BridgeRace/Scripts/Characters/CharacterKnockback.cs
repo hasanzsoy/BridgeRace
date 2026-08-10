@@ -2,21 +2,13 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class CharacterKnockback :
-    MonoBehaviour,
-    IKnockbackable
+public class CharacterKnockback : MonoBehaviour, IKnockbackable
 {
     [Header("Knockback Settings")]
     [SerializeField] private float controlLockDuration = 0.35f;
 
-    [Header("Brick Drop Settings")]
-    [SerializeField] private int bricksToDrop = 3;
-
-
     private Rigidbody rb;
-
     private CharacterBase character;
-
     private CharacterStack characterStack;
 
     private bool isKnockedBack;
@@ -24,14 +16,11 @@ public class CharacterKnockback :
 
     private void Awake()
     {
-        rb =
-            GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
 
-        character =
-            GetComponent<CharacterBase>();
+        character = GetComponent<CharacterBase>();
 
-        characterStack =
-            GetComponent<CharacterStack>();
+        characterStack = GetComponent<CharacterStack>();
 
 
         if (character == null)
@@ -41,11 +30,19 @@ public class CharacterKnockback :
                 " üzerinde CharacterBase bulunamadı!"
             );
         }
+
+
+        if (characterStack == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " üzerinde CharacterStack bulunamadı!"
+            );
+        }
     }
 
 
-    public void TakeKnockback(
-        Vector3 force)
+    public void TakeKnockback(Vector3 force)
     {
         if (isKnockedBack)
         {
@@ -59,25 +56,19 @@ public class CharacterKnockback :
     }
 
 
-    private IEnumerator KnockbackRoutine(
-        Vector3 force)
+    private IEnumerator KnockbackRoutine(Vector3 force)
     {
         isKnockedBack = true;
 
 
         if (character != null)
         {
-            character.SetMovementEnabled(
-                false
-            );
+            character.SetMovementEnabled(false);
         }
 
 
-        rb.linearVelocity =
-            Vector3.zero;
-
-        rb.angularVelocity =
-            Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
 
         rb.AddForce(
@@ -86,10 +77,11 @@ public class CharacterKnockback :
         );
 
 
+        // Taşınan bütün Brick'leri düşür.
         if (characterStack != null)
         {
             characterStack.DropBricks(
-                bricksToDrop
+                characterStack.BrickCount
             );
         }
 
@@ -109,9 +101,7 @@ public class CharacterKnockback :
 
         if (character != null)
         {
-            character.SetMovementEnabled(
-                true
-            );
+            character.SetMovementEnabled(true);
         }
 
 
