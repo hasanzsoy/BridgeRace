@@ -58,6 +58,14 @@ public class AIController : CharacterBase
     [SerializeField] private float hardSearchInterval = 0.12f;
 
 
+    [Header("Separation Settings")]
+    [SerializeField] private float separationRadius = 1.7f;
+
+    [SerializeField] private float separationStrength = 1.15f;
+
+    [SerializeField] private float separationHeightDifference = 1.5f;
+
+
     private AIState currentState =
         AIState.CollectingStart;
 
@@ -67,6 +75,9 @@ public class AIController : CharacterBase
     private float nextBrickSearchTime;
 
     private float brickSearchInterval;
+
+
+    private CharacterBase[] allCharacters;
 
 
     protected override void Awake()
@@ -91,6 +102,17 @@ public class AIController : CharacterBase
 
 
         ApplyDifficulty();
+    }
+
+
+    private void Start()
+    {
+        // Player ve diğer AI karakterlerini
+        // yalnızca bir kez buluyoruz.
+        allCharacters =
+            FindObjectsByType<CharacterBase>(
+                FindObjectsSortMode.None
+            );
     }
 
 
@@ -292,7 +314,8 @@ public class AIController : CharacterBase
         }
 
 
-        MoveTowards(
+        // Brick toplarken Separation kullan.
+        MoveTowardsWithSeparation(
             targetBrick.transform.position
         );
     }
@@ -444,6 +467,7 @@ public class AIController : CharacterBase
         }
 
 
+        // Köprüye giderken Separation YOK.
         MoveTowards(
             target.position
         );
@@ -542,11 +566,169 @@ public class AIController : CharacterBase
     }
 
 
+    private void MoveTowardsWithSeparation(
+        Vector3 targetPosition)
+    {
+        Vector3 targetDirection =
+            targetPosition -
+            transform.position;
+
+
+        targetDirection.y = 0f;
+
+
+        if (targetDirection.sqrMagnitude <
+            0.001f)
+        {
+            SetMoveDirection(
+                Vector3.zero
+            );
+
+            return;
+        }
+
+
+        targetDirection.Normalize();
+
+
+        Vector3 separationDirection =
+            GetSeparationDirection();
+
+
+        Vector3 finalDirection =
+            targetDirection +
+            separationDirection *
+            separationStrength;
+
+
+        finalDirection.y = 0f;
+
+
+        if (finalDirection.sqrMagnitude <
+            0.001f)
+        {
+            finalDirection =
+                targetDirection;
+        }
+
+
+        SetMoveDirection(
+            finalDirection.normalized
+        );
+    }
+
+
+    private Vector3 GetSeparationDirection()
+    {
+        if (allCharacters == null)
+        {
+            return Vector3.zero;
+        }
+
+
+        Vector3 separation =
+            Vector3.zero;
+
+
+        int nearbyCharacterCount =
+            0;
+
+
+        foreach (CharacterBase otherCharacter
+                 in allCharacters)
+        {
+            if (otherCharacter == null)
+            {
+                continue;
+            }
+
+
+            if (otherCharacter == this)
+            {
+                continue;
+            }
+
+
+            float heightDifference =
+                Mathf.Abs(
+                    otherCharacter.transform.position.y -
+                    transform.position.y
+                );
+
+
+            // Farklı yükseklikteki karakterleri
+            // birbirinden kaçırma.
+            if (heightDifference >
+                separationHeightDifference)
+            {
+                continue;
+            }
+
+
+            Vector3 awayDirection =
+                transform.position -
+                otherCharacter.transform.position;
+
+
+            awayDirection.y = 0f;
+
+
+            float distance =
+                awayDirection.magnitude;
+
+
+            if (distance <= 0.001f)
+            {
+                continue;
+            }
+
+
+            if (distance >
+                separationRadius)
+            {
+                continue;
+            }
+
+
+            // Karakter çok yakınsa kaçınma
+            // etkisi daha güçlü olur.
+            float strength =
+                1f -
+                (
+                    distance /
+                    separationRadius
+                );
+
+
+            separation +=
+                awayDirection.normalized *
+                strength;
+
+
+            nearbyCharacterCount++;
+        }
+
+
+        if (nearbyCharacterCount <= 0)
+        {
+            return Vector3.zero;
+        }
+
+
+        separation /=
+            nearbyCharacterCount;
+
+
+        return separation;
+    }
+
+
     private float GetHorizontalDistance(
         Vector3 firstPosition,
         Vector3 secondPosition)
     {
         firstPosition.y = 0f;
+
         secondPosition.y = 0f;
 
 
