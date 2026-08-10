@@ -7,8 +7,13 @@ public class CharacterKnockback : MonoBehaviour, IKnockbackable
     [Header("Knockback Settings")]
     [SerializeField] private float controlLockDuration = 0.35f;
 
+    [SerializeField] private float knockbackProtectionDuration = 1.1f;
+
+
     private Rigidbody rb;
+
     private CharacterBase character;
+
     private CharacterStack characterStack;
 
     private bool isKnockedBack;
@@ -94,6 +99,7 @@ public class CharacterKnockback : MonoBehaviour, IKnockbackable
         }
 
 
+        // Kısa süre kontrol kapalı.
         yield return new WaitForSeconds(
             controlLockDuration
         );
@@ -102,6 +108,21 @@ public class CharacterKnockback : MonoBehaviour, IKnockbackable
         if (character != null)
         {
             character.SetMovementEnabled(true);
+        }
+
+
+        // Kontrol geri geldi ama karakter
+        // hemen tekrar knockback yiyemez.
+        float remainingProtection =
+            knockbackProtectionDuration -
+            controlLockDuration;
+
+
+        if (remainingProtection > 0f)
+        {
+            yield return new WaitForSeconds(
+                remainingProtection
+            );
         }
 
 
