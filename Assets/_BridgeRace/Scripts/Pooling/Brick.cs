@@ -17,6 +17,11 @@ public class Brick : MonoBehaviour, ICollectable
 
     public TeamColor CollectableColor =>
         brickColor;
+    public bool CanBeCollected =>
+    !isCollected &&
+    brickCollider != null &&
+    brickCollider.enabled &&
+    gameObject.activeInHierarchy;
 
 
     private void Awake()
