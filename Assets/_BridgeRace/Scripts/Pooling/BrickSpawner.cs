@@ -2,11 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum BrickSpawnMode
+{
+    InitialAllColors,
+    ActivateByArrival
+}
+
+
 public class BrickSpawner : MonoBehaviour
 {
+    [Header("Spawn Mode")]
+    [SerializeField]
+    private BrickSpawnMode spawnMode =
+        BrickSpawnMode.InitialAllColors;
+
+
     [Header("References")]
     [SerializeField] private BrickPoolManager brickPoolManager;
+
     [SerializeField] private BoxCollider spawnArea;
+
 
     [Header("Brick Amounts")]
     [SerializeField] private int blueBrickAmount = 12;
@@ -14,23 +30,42 @@ public class BrickSpawner : MonoBehaviour
     [SerializeField] private int greenBrickAmount = 12;
     [SerializeField] private int yellowBrickAmount = 12;
 
+
     [Header("Grid Settings")]
     [SerializeField] private int columns = 8;
+
     [SerializeField] private float edgeMargin = 1f;
+
     [SerializeField] private bool randomizeColors = true;
+
 
     [Header("Spawn Settings")]
     [SerializeField] private float respawnDelay = 2.5f;
+
     [SerializeField] private float spawnHeightOffset = 0.05f;
 
-    private List<Vector3> spawnSlots = new List<Vector3>();
+
+    private List<Vector3> spawnSlots =
+        new List<Vector3>();
+
+
+    // Hangi rengin hangi slotlara ait olduğunu tutuyor.
+    private Dictionary<TeamColor, List<int>> colorSlots =
+        new Dictionary<TeamColor, List<int>>();
+
+
+    // Middle alanda hangi renklerin daha önce
+    // aktif edildiğini tutuyor.
+    private HashSet<TeamColor> activatedColors =
+        new HashSet<TeamColor>();
 
 
     private void Awake()
     {
         if (spawnArea == null)
         {
-            spawnArea = GetComponent<BoxCollider>();
+            spawnArea =
+                GetComponent<BoxCollider>();
         }
     }
 
@@ -38,13 +73,29 @@ public class BrickSpawner : MonoBehaviour
     private void Start()
     {
         CreateGrid();
-        SpawnInitialBricks();
+
+        CreateColorSlotMap();
+
+
+        // Start Island gibi alanlarda
+        // bütün renkleri baştan oluştur.
+        if (spawnMode ==
+            BrickSpawnMode.InitialAllColors)
+        {
+            SpawnAllColors();
+        }
+
+        // ActivateByArrival ise burada hiçbir şey
+        // spawn etmiyoruz.
+        //
+        // Middle başlangıçta tamamen boş kalacak.
     }
 
 
     private void CreateGrid()
     {
         spawnSlots.Clear();
+
 
         int totalBrickAmount =
             blueBrickAmount +
@@ -53,19 +104,35 @@ public class BrickSpawner : MonoBehaviour
             yellowBrickAmount;
 
 
-        int rowCount = Mathf.CeilToInt(
-            totalBrickAmount / (float)columns
-        );
+        int rowCount =
+            Mathf.CeilToInt(
+                totalBrickAmount /
+                (float)columns
+            );
 
 
-        Bounds bounds = spawnArea.bounds;
+        Bounds bounds =
+            spawnArea.bounds;
 
 
-        float minX = bounds.min.x + edgeMargin;
-        float maxX = bounds.max.x - edgeMargin;
+        float minX =
+            bounds.min.x +
+            edgeMargin;
 
-        float minZ = bounds.min.z + edgeMargin;
-        float maxZ = bounds.max.z - edgeMargin;
+
+        float maxX =
+            bounds.max.x -
+            edgeMargin;
+
+
+        float minZ =
+            bounds.min.z +
+            edgeMargin;
+
+
+        float maxZ =
+            bounds.max.z -
+            edgeMargin;
 
 
         float spawnY =
@@ -73,51 +140,88 @@ public class BrickSpawner : MonoBehaviour
             spawnHeightOffset;
 
 
-        for (int row = 0; row < rowCount; row++)
+        for (int row = 0;
+             row < rowCount;
+             row++)
         {
-            for (int column = 0; column < columns; column++)
+            for (int column = 0;
+                 column < columns;
+                 column++)
             {
-                if (spawnSlots.Count >= totalBrickAmount)
+                if (spawnSlots.Count >=
+                    totalBrickAmount)
                 {
                     return;
                 }
 
 
                 float xPercent =
-                    (column + 0.5f) / columns;
+                    (column + 0.5f) /
+                    columns;
+
 
                 float zPercent =
-                    (row + 0.5f) / rowCount;
+                    (row + 0.5f) /
+                    rowCount;
 
 
-                float spawnX = Mathf.Lerp(
-                    minX,
-                    maxX,
-                    xPercent
+                float spawnX =
+                    Mathf.Lerp(
+                        minX,
+                        maxX,
+                        xPercent
+                    );
+
+
+                float spawnZ =
+                    Mathf.Lerp(
+                        minZ,
+                        maxZ,
+                        zPercent
+                    );
+
+
+                spawnSlots.Add(
+                    new Vector3(
+                        spawnX,
+                        spawnY,
+                        spawnZ
+                    )
                 );
-
-                float spawnZ = Mathf.Lerp(
-                    minZ,
-                    maxZ,
-                    zPercent
-                );
-
-
-                Vector3 spawnPosition = new Vector3(
-                    spawnX,
-                    spawnY,
-                    spawnZ
-                );
-
-
-                spawnSlots.Add(spawnPosition);
             }
         }
     }
 
 
-    private void SpawnInitialBricks()
+    private void CreateColorSlotMap()
     {
+        colorSlots.Clear();
+
+
+        colorSlots.Add(
+            TeamColor.Blue,
+            new List<int>()
+        );
+
+
+        colorSlots.Add(
+            TeamColor.Red,
+            new List<int>()
+        );
+
+
+        colorSlots.Add(
+            TeamColor.Green,
+            new List<int>()
+        );
+
+
+        colorSlots.Add(
+            TeamColor.Yellow,
+            new List<int>()
+        );
+
+
         List<TeamColor> colors =
             new List<TeamColor>();
 
@@ -128,17 +232,20 @@ public class BrickSpawner : MonoBehaviour
             blueBrickAmount
         );
 
+
         AddColorsToList(
             colors,
             TeamColor.Red,
             redBrickAmount
         );
 
+
         AddColorsToList(
             colors,
             TeamColor.Green,
             greenBrickAmount
         );
+
 
         AddColorsToList(
             colors,
@@ -153,13 +260,98 @@ public class BrickSpawner : MonoBehaviour
         }
 
 
-        for (int i = 0; i < colors.Count; i++)
+        // Random renk listesindeki her renk
+        // kendi slot numarasını saklıyor.
+        for (int i = 0;
+             i < colors.Count;
+             i++)
+        {
+            TeamColor color =
+                colors[i];
+
+
+            colorSlots[color].Add(i);
+        }
+    }
+
+
+    private void SpawnAllColors()
+    {
+        SpawnColor(
+            TeamColor.Blue
+        );
+
+
+        SpawnColor(
+            TeamColor.Red
+        );
+
+
+        SpawnColor(
+            TeamColor.Green
+        );
+
+
+        SpawnColor(
+            TeamColor.Yellow
+        );
+    }
+
+
+    private void SpawnColor(
+        TeamColor color)
+    {
+        if (!colorSlots.ContainsKey(color))
+        {
+            return;
+        }
+
+
+        List<int> slots =
+            colorSlots[color];
+
+
+        foreach (int slotIndex in slots)
         {
             SpawnBrick(
-                colors[i],
-                i
+                color,
+                slotIndex
             );
         }
+    }
+
+
+    // MiddleRoomActivator burayı çağıracak.
+    public void ActivateColor(
+        TeamColor color)
+    {
+        // Bu spawner Arrival modunda değilse
+        // ekstra spawn yapma.
+        if (spawnMode !=
+            BrickSpawnMode.ActivateByArrival)
+        {
+            return;
+        }
+
+
+        // Aynı renk daha önce aktif olduysa
+        // tekrar bütün Brickleri spawn etme.
+        if (activatedColors.Contains(color))
+        {
+            return;
+        }
+
+
+        activatedColors.Add(color);
+
+
+        SpawnColor(color);
+
+
+        Debug.Log(
+            color +
+            " Middle Brick spawn aktif oldu."
+        );
     }
 
 
@@ -168,7 +360,9 @@ public class BrickSpawner : MonoBehaviour
         TeamColor color,
         int amount)
     {
-        for (int i = 0; i < amount; i++)
+        for (int i = 0;
+             i < amount;
+             i++)
         {
             colors.Add(color);
         }
@@ -178,19 +372,27 @@ public class BrickSpawner : MonoBehaviour
     private void ShuffleColors(
         List<TeamColor> colors)
     {
-        for (int i = 0; i < colors.Count; i++)
+        for (int i = 0;
+             i < colors.Count;
+             i++)
         {
-            int randomIndex = Random.Range(
-                i,
-                colors.Count
-            );
+            int randomIndex =
+                Random.Range(
+                    i,
+                    colors.Count
+                );
 
 
-            TeamColor temp = colors[i];
+            TeamColor temp =
+                colors[i];
 
-            colors[i] = colors[randomIndex];
 
-            colors[randomIndex] = temp;
+            colors[i] =
+                colors[randomIndex];
+
+
+            colors[randomIndex] =
+                temp;
         }
     }
 
@@ -223,7 +425,9 @@ public class BrickSpawner : MonoBehaviour
 
 
         Brick brick =
-            brickPoolManager.GetBrickFromPool(color);
+            brickPoolManager.GetBrickFromPool(
+                color
+            );
 
 
         if (brick == null)
@@ -232,10 +436,14 @@ public class BrickSpawner : MonoBehaviour
         }
 
 
-        brick.transform.SetParent(transform);
+        brick.transform.SetParent(
+            transform
+        );
+
 
         brick.transform.position =
             spawnSlots[slotIndex];
+
 
         brick.transform.rotation =
             Quaternion.identity;

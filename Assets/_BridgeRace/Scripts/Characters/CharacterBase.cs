@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public abstract class CharacterBase : MonoBehaviour
+public abstract class CharacterBase :MonoBehaviour,IRacer
 {
     [Header("Character Settings")]
     [SerializeField] private TeamColor teamColor = TeamColor.Blue;
@@ -20,6 +20,8 @@ public abstract class CharacterBase : MonoBehaviour
 
 
     public TeamColor CharacterTeamColor => teamColor;
+    public TeamColor RacerColor => teamColor;
+
 
 
     protected virtual void Awake()
