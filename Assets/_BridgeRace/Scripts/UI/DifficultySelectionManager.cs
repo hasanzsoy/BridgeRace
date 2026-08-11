@@ -1,17 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DifficultySelectionManager :
-    MonoBehaviour
+public class DifficultySelectionManager : MonoBehaviour
 {
-    [Header("Scene Settings")]
+    [Header("Gameplay Scene")]
     [SerializeField]
     private string gameplaySceneName =
         "02_Level_01";
-
-    [SerializeField]
-    private string mainMenuSceneName =
-        "01_MainMenu";
 
 
     public void SelectEasy()
@@ -38,14 +33,6 @@ public class DifficultySelectionManager :
             AIDifficulty.Hard;
 
         StartGame();
-    }
-
-
-    public void BackToMainMenu()
-    {
-        SceneManager.LoadScene(
-            mainMenuSceneName
-        );
     }
 
 

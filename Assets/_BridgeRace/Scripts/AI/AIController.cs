@@ -46,8 +46,8 @@ public class AIController : CharacterBase
     [SerializeField] private float pointReachedDistance = 0.8f;
 
 
-    [Header("Difficulty")]
-    [SerializeField] private AIDifficulty difficulty = AIDifficulty.Normal;
+    [Header("Difficulty Settings")]
+    private AIDifficulty difficulty;
 
     [SerializeField] private float easyMoveSpeed = 4.2f;
     [SerializeField] private float normalMoveSpeed = 5f;
@@ -84,13 +84,11 @@ public class AIController : CharacterBase
     {
         base.Awake();
 
-
         if (characterStack == null)
         {
             characterStack =
                 GetComponent<CharacterStack>();
         }
-
 
         if (characterStack == null)
         {
@@ -99,6 +97,11 @@ public class AIController : CharacterBase
                 " üzerinde CharacterStack bulunamadı!"
             );
         }
+
+
+
+        difficulty =
+            GameSettings.SelectedDifficulty;
 
 
         ApplyDifficulty();
@@ -248,6 +251,16 @@ public class AIController : CharacterBase
 
                 break;
         }
+
+        Debug.Log(
+    gameObject.name +
+    " | Difficulty: " +
+    difficulty +
+    " | Speed: " +
+    moveSpeed +
+    " | Search: " +
+    brickSearchInterval
+);
     }
 
 
