@@ -2,24 +2,35 @@ using System;
 
 public static class EventManager
 {
+    // Brick toplandığında
     public static event Action<CharacterBase, int>
         OnBrickCollected;
 
+    // Köprü yaparken Brick harcandığında
     public static event Action<CharacterBase, int>
         OnBrickSpent;
 
+    // Knockback sonrası Brickler düştüğünde
     public static event Action<CharacterBase, int>
         OnBrickDropped;
 
+    // Karakter knockback aldığında
     public static event Action<CharacterBase>
         OnCharacterKnockback;
 
+    // Karakter FinishTrigger'a girdiğinde
     public static event Action<CharacterBase>
         OnCharacterFinished;
 
+    // Karakterin yarış sırası belli olduğunda
+    public static event Action<CharacterBase, int>
+        OnCharacterPlaced;
+
+    // Yarış başladığında
     public static event Action
         OnRaceStarted;
 
+    // Bütün yarışçılar bitirdiğinde
     public static event Action
         OnRaceFinished;
 
@@ -71,6 +82,17 @@ public static class EventManager
     {
         OnCharacterFinished?.Invoke(
             character
+        );
+    }
+
+
+    public static void CharacterPlaced(
+        CharacterBase character,
+        int place)
+    {
+        OnCharacterPlaced?.Invoke(
+            character,
+            place
         );
     }
 

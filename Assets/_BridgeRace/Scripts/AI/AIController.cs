@@ -123,6 +123,9 @@ public class AIController : CharacterBase
     {
         EventManager.OnCharacterKnockback +=
             OnCharacterKnockback;
+
+        EventManager.OnCharacterPlaced +=
+            OnCharacterPlaced;
     }
 
 
@@ -130,6 +133,9 @@ public class AIController : CharacterBase
     {
         EventManager.OnCharacterKnockback -=
             OnCharacterKnockback;
+
+        EventManager.OnCharacterPlaced -=
+            OnCharacterPlaced;
     }
 
 
@@ -508,45 +514,15 @@ public class AIController : CharacterBase
     {
         if (finishTarget == null)
         {
-            FinishRace();
+            SetMoveDirection(
+                Vector3.zero
+            );
 
             return;
         }
 
-
         MoveTowards(
             finishTarget.position
-        );
-
-
-        float distance =
-            GetHorizontalDistance(
-                transform.position,
-                finishTarget.position
-            );
-
-
-        if (distance <=
-            pointReachedDistance)
-        {
-            FinishRace();
-        }
-    }
-
-
-    private void FinishRace()
-    {
-        currentState =
-            AIState.Finished;
-
-
-        SetMoveDirection(
-            Vector3.zero
-        );
-
-
-        EventManager.CharacterFinished(
-            this
         );
     }
 
@@ -785,5 +761,29 @@ public class AIController : CharacterBase
 
                 break;
         }
+    }
+    private void OnCharacterPlaced(
+    CharacterBase placedCharacter,
+    int place)
+    {
+        // Başka bir karakter finish olduysa
+        // bu AI'yı ilgilendirmez.
+        if (placedCharacter != this)
+        {
+            return;
+        }
+
+
+        currentState =
+            AIState.Finished;
+
+
+        targetBrick =
+            null;
+
+
+        SetMoveDirection(
+            Vector3.zero
+        );
     }
 }

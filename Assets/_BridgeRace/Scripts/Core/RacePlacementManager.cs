@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class RacePlacementManager : MonoBehaviour
@@ -9,6 +10,11 @@ public class RacePlacementManager : MonoBehaviour
     [SerializeField] private Transform thirdPlacePoint;
     [SerializeField] private Transform fourthPlacePoint;
 
+    [Header("Race Settings")]
+    [SerializeField] private int totalRacers = 4;
+
+    [Header("Podium Animation")]
+    [SerializeField] private float podiumMoveDuration = 0.5f;
 
     private List<CharacterBase> finishedCharacters =
         new List<CharacterBase>();
@@ -37,6 +43,8 @@ public class RacePlacementManager : MonoBehaviour
         }
 
 
+        // Aynı karakter iki defa
+        // sıralamaya giremesin.
         if (finishedCharacters.Contains(character))
         {
             return;
@@ -50,19 +58,59 @@ public class RacePlacementManager : MonoBehaviour
             finishedCharacters.Count;
 
 
-        Transform targetPoint =
+        Transform placePoint =
             GetPlacePoint(place);
 
 
-        if (targetPoint == null)
+        if (placePoint == null)
         {
             return;
         }
 
 
+        SendCharacterToPodium(
+            character,
+            placePoint
+        );
+
+
+        EventManager.CharacterPlaced(
+            character,
+            place
+        );
+
+
+        Debug.Log(
+            character.gameObject.name +
+            " yarışı " +
+            place +
+            ". sırada bitirdi."
+        );
+
+
+        // 4 yarışçı da bitirdiyse
+        // yarış tamamen bitmiş olur.
+        if (finishedCharacters.Count >=
+            totalRacers)
+        {
+            EventManager.RaceFinished();
+        }
+    }
+
+
+    private void SendCharacterToPodium(
+        CharacterBase character,
+        Transform placePoint)
+    {
+        // Karakter artık hareket edemesin.
         character.SetMovementEnabled(false);
 
 
+        // Varsa eski DOTween hareketlerini temizle.
+        character.transform.DOKill();
+
+
+        // Fizik hareketini durdur.
         if (character.TryGetComponent<Rigidbody>(
                 out Rigidbody rb))
         {
@@ -72,32 +120,39 @@ public class RacePlacementManager : MonoBehaviour
             rb.angularVelocity =
                 Vector3.zero;
 
-            rb.position =
-                targetPoint.position;
-
-            rb.rotation =
-                targetPoint.rotation;
+            rb.isKinematic =
+                true;
         }
-        else
+
+
+        // Podiumda karakterler birbirini
+        // itmesin.
+        if (character.TryGetComponent<Collider>(
+                out Collider characterCollider))
         {
-            character.transform.position =
-                targetPoint.position;
-
-            character.transform.rotation =
-                targetPoint.rotation;
+            characterCollider.enabled =
+                false;
         }
 
 
-        Debug.Log(
-            character.gameObject.name +
-            " yarışı " +
-            place +
-            ". sırada bitirdi."
+        // Direkt ışınlamak yerine
+        // kısa bir geçiş animasyonu.
+        character.transform.DOMove(
+            placePoint.position,
+            podiumMoveDuration
+        )
+        .SetEase(Ease.OutQuad);
+
+
+        character.transform.DORotateQuaternion(
+            placePoint.rotation,
+            podiumMoveDuration
         );
     }
 
 
-    private Transform GetPlacePoint(int place)
+    private Transform GetPlacePoint(
+        int place)
     {
         switch (place)
         {

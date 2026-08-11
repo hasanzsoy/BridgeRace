@@ -15272,6 +15272,72 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3783b05277e568147965bae1b1aad107, type: 3}
+--- !u!1 &1100798430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1100798431}
+  - component: {fileID: 1100798432}
+  - component: {fileID: 1100798433}
+  m_Layer: 0
+  m_Name: FinishTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1100798431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100798430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 2.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861718509}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1100798432
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100798430}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 17, y: 3, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1100798433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100798430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 491678862af59e94c833fc17e68074a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FinishTrigger
 --- !u!1001 &1100895699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16846,6 +16912,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 964231604856887847, guid: d9641a4f5033fd34287d7325ac183119, type: 3}
   m_PrefabInstance: {fileID: 1201876186}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1204175671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1204175672}
+  m_Layer: 0
+  m_Name: FinishApproach_Red
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1204175672
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204175671}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6, y: 1.62, z: 4.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861718509}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1204595422
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17409,16 +17506,18 @@ MonoBehaviour:
   bridge1End: {fileID: 1628815967}
   bridge2Start: {fileID: 144034283}
   bridge2End: {fileID: 1652600283}
-  finishTarget: {fileID: 457451105}
+  finishTarget: {fileID: 1826825346}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
-  difficulty: 1
   easyMoveSpeed: 4.2
   normalMoveSpeed: 5
   hardMoveSpeed: 5.7
   easySearchInterval: 0.45
   normalSearchInterval: 0.25
   hardSearchInterval: 0.12
+  separationRadius: 1.7
+  separationStrength: 1.15
+  separationHeightDifference: 1.5
 --- !u!1 &1239021725
 GameObject:
   m_ObjectHideFlags: 0
@@ -20089,6 +20188,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1445886169}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1452778727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1452778728}
+  m_Layer: 0
+  m_Name: FinishApproach_Yellow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1452778728
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452778727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6, y: 1.62, z: 4.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861718509}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1461902362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22544,6 +22674,8 @@ MonoBehaviour:
   secondPlacePoint: {fileID: 1876017227}
   thirdPlacePoint: {fileID: 43249039}
   fourthPlacePoint: {fileID: 698892614}
+  totalRacers: 4
+  podiumMoveDuration: 0.5
 --- !u!1 &1677240241
 GameObject:
   m_ObjectHideFlags: 0
@@ -24030,6 +24162,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1822186082}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1826825345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1826825346}
+  m_Layer: 0
+  m_Name: FinishApproach_Green
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1826825346
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826825345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.62, z: 4.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861718509}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1829129841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24523,16 +24686,18 @@ MonoBehaviour:
   bridge1End: {fileID: 1554585409}
   bridge2Start: {fileID: 2073341624}
   bridge2End: {fileID: 164035345}
-  finishTarget: {fileID: 1242165433}
+  finishTarget: {fileID: 1452778728}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
-  difficulty: 1
   easyMoveSpeed: 4.2
   normalMoveSpeed: 5
   hardMoveSpeed: 5.7
   easySearchInterval: 0.45
   normalSearchInterval: 0.25
   hardSearchInterval: 0.12
+  separationRadius: 1.7
+  separationStrength: 1.15
+  separationHeightDifference: 1.5
 --- !u!1 &1848945123
 GameObject:
   m_ObjectHideFlags: 0
@@ -24648,6 +24813,10 @@ Transform:
   - {fileID: 1290988640}
   - {fileID: 457451105}
   - {fileID: 1242165433}
+  - {fileID: 1204175672}
+  - {fileID: 1826825346}
+  - {fileID: 1452778728}
+  - {fileID: 1100798431}
   m_Father: {fileID: 619654596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1861718510
@@ -28251,16 +28420,18 @@ MonoBehaviour:
   bridge1End: {fileID: 173263329}
   bridge2Start: {fileID: 867539972}
   bridge2End: {fileID: 1478800157}
-  finishTarget: {fileID: 1290988640}
+  finishTarget: {fileID: 1204175672}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
-  difficulty: 1
   easyMoveSpeed: 4.2
   normalMoveSpeed: 5
   hardMoveSpeed: 5.7
   easySearchInterval: 0.45
   normalSearchInterval: 0.25
   hardSearchInterval: 0.12
+  separationRadius: 1.7
+  separationStrength: 1.15
+  separationHeightDifference: 1.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
