@@ -4811,7 +4811,7 @@ MonoBehaviour:
   redBrickPrefab: {fileID: 40185577517121991, guid: 4b00c09bacf545c46b6ce7a1941740d8, type: 3}
   greenBrickPrefab: {fileID: 40185577517121991, guid: 08a5ca26da3731249807b894acbab597, type: 3}
   yellowBrickPrefab: {fileID: 40185577517121991, guid: aa7421e29d6dab9479367dbbb4249dcd, type: 3}
-  poolSizePerColor: 100
+  poolSizePerColor: 120
   poolParent: {fileID: 217091654}
 --- !u!1001 &360501489
 PrefabInstance:
@@ -15326,7 +15326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1100798431
 Transform:
   m_ObjectHideFlags: 0
@@ -16442,11 +16442,11 @@ MonoBehaviour:
   spawnMode: 0
   brickPoolManager: {fileID: 355835632}
   spawnArea: {fileID: 1177964738}
-  blueBrickAmount: 20
-  redBrickAmount: 20
-  greenBrickAmount: 20
-  yellowBrickAmount: 20
-  columns: 10
+  blueBrickAmount: 28
+  redBrickAmount: 28
+  greenBrickAmount: 28
+  yellowBrickAmount: 28
+  columns: 14
   edgeMargin: 0.5
   randomizeColors: 1
   respawnDelay: 2.5
@@ -17486,6 +17486,10 @@ PrefabInstance:
     - target: {fileID: 8375117697344994004, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: horizontalKnockbackForce
       value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: verticalSpacing
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: brickPoolManager
@@ -20684,6 +20688,10 @@ PrefabInstance:
     - target: {fileID: 8375117697344994004, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: horizontalKnockbackForce
       value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: verticalSpacing
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: brickPoolManager
@@ -24659,6 +24667,10 @@ PrefabInstance:
       value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: verticalSpacing
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: brickPoolManager
       value: 
       objectReference: {fileID: 355835632}
@@ -28395,6 +28407,10 @@ PrefabInstance:
     - target: {fileID: 8375117697344994004, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: horizontalKnockbackForce
       value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: verticalSpacing
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 8873581146131242127, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: brickPoolManager
