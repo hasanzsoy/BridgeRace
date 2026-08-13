@@ -1515,7 +1515,7 @@ GameObject:
   m_Component:
   - component: {fileID: 118605388}
   m_Layer: 0
-  m_Name: Finish_Base
+  m_Name: Middle02_Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2344,7 +2344,7 @@ GameObject:
   - component: {fileID: 170480172}
   - component: {fileID: 170480171}
   m_Layer: 0
-  m_Name: Finish_Trim_Left
+  m_Name: Middle02_Trim_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11177,7 +11177,7 @@ GameObject:
   - component: {fileID: 779565797}
   - component: {fileID: 779565796}
   m_Layer: 0
-  m_Name: 'Finish_Trim_Front '
+  m_Name: Middle02_Trim_Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17452,7 +17452,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1204175672
 Transform:
   m_ObjectHideFlags: 0
@@ -17552,7 +17552,7 @@ GameObject:
   - component: {fileID: 1206480008}
   - component: {fileID: 1206480007}
   m_Layer: 0
-  m_Name: Finish_Top
+  m_Name: Middle02_Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18590,7 +18590,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1266082765
 Transform:
   m_ObjectHideFlags: 0
@@ -18640,7 +18640,7 @@ GameObject:
   - component: {fileID: 1266924689}
   - component: {fileID: 1266924688}
   m_Layer: 0
-  m_Name: Finish_Trim_Back
+  m_Name: Middle02_Trim_Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18977,7 +18977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1282678287
 Transform:
   m_ObjectHideFlags: 0
@@ -20581,7 +20581,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1436894430
 Transform:
   m_ObjectHideFlags: 0
@@ -20723,7 +20723,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1452778728
 Transform:
   m_ObjectHideFlags: 0
@@ -23504,7 +23504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1681401175
 Transform:
   m_ObjectHideFlags: 0
@@ -24898,7 +24898,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1826825346
 Transform:
   m_ObjectHideFlags: 0
@@ -25438,7 +25438,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1848945124
 Transform:
   m_ObjectHideFlags: 0
@@ -27796,7 +27796,7 @@ GameObject:
   - component: {fileID: 2006178976}
   - component: {fileID: 2006178975}
   m_Layer: 0
-  m_Name: Finish_Trim_Right
+  m_Name: Middle02_Trim_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
