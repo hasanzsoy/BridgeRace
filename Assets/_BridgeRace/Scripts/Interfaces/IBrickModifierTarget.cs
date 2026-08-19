@@ -1,16 +1,8 @@
-using UnityEngine;
-
-public class IBrickModifierTarget : MonoBehaviour
+public interface IBrickModifierTarget
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    int CurrentBrickCount { get; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    void AddBricks(int amount);
+
+    void RemoveBricks(int amount);
 }

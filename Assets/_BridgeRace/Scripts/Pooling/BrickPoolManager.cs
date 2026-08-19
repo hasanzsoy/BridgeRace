@@ -10,12 +10,13 @@ public class BrickPoolManager : MonoBehaviour
     [SerializeField] private Brick yellowBrickPrefab;
 
     [Header("Pool Settings")]
-    [SerializeField] private int poolSizePerColor = 60;
+    [SerializeField] private int poolSizePerColor = 120;
 
     [SerializeField] private Transform poolParent;
 
 
-    private Dictionary<TeamColor, Queue<Brick>> brickPools;
+    private Dictionary<TeamColor, Queue<Brick>>
+        brickPools;
 
 
     private void Awake()
@@ -23,20 +24,24 @@ public class BrickPoolManager : MonoBehaviour
         brickPools =
             new Dictionary<TeamColor, Queue<Brick>>();
 
+
         CreatePool(
             TeamColor.Blue,
             blueBrickPrefab
         );
+
 
         CreatePool(
             TeamColor.Red,
             redBrickPrefab
         );
 
+
         CreatePool(
             TeamColor.Green,
             greenBrickPrefab
         );
+
 
         CreatePool(
             TeamColor.Yellow,
@@ -52,7 +57,8 @@ public class BrickPoolManager : MonoBehaviour
         if (brickPrefab == null)
         {
             Debug.LogError(
-                color + " brick prefab atanmadı!"
+                color +
+                " brick prefab atanmadı!"
             );
 
             return;
@@ -63,16 +69,25 @@ public class BrickPoolManager : MonoBehaviour
             new Queue<Brick>();
 
 
-        for (int i = 0; i < poolSizePerColor; i++)
+        for (int i = 0;
+             i < poolSizePerColor;
+             i++)
         {
-            Brick newBrick = Instantiate(
-                brickPrefab,
-                poolParent
+            Brick newBrick =
+                Instantiate(
+                    brickPrefab,
+                    poolParent
+                );
+
+
+            newBrick.gameObject.SetActive(
+                false
             );
 
-            newBrick.gameObject.SetActive(false);
 
-            newPool.Enqueue(newBrick);
+            newPool.Enqueue(
+                newBrick
+            );
         }
 
 
@@ -89,7 +104,8 @@ public class BrickPoolManager : MonoBehaviour
         if (!brickPools.ContainsKey(color))
         {
             Debug.LogError(
-                color + " için Brick Pool bulunamadı!"
+                color +
+                " için Brick Pool bulunamadı!"
             );
 
             return null;
@@ -103,7 +119,8 @@ public class BrickPoolManager : MonoBehaviour
         if (selectedPool.Count <= 0)
         {
             Debug.LogWarning(
-                color + " Brick Pool boş!"
+                color +
+                " Brick Pool boş!"
             );
 
             return null;
@@ -113,7 +130,11 @@ public class BrickPoolManager : MonoBehaviour
         Brick brick =
             selectedPool.Dequeue();
 
-        brick.gameObject.SetActive(true);
+
+        brick.gameObject.SetActive(
+            true
+        );
+
 
         return brick;
     }
@@ -132,7 +153,8 @@ public class BrickPoolManager : MonoBehaviour
             brick.CollectableColor;
 
 
-        if (!brickPools.ContainsKey(brickColor))
+        if (!brickPools.ContainsKey(
+                brickColor))
         {
             Debug.LogError(
                 brickColor +
@@ -143,11 +165,18 @@ public class BrickPoolManager : MonoBehaviour
         }
 
 
-        brick.transform.SetParent(poolParent);
+        brick.transform.SetParent(
+            poolParent
+        );
 
-        brick.gameObject.SetActive(false);
+
+        brick.gameObject.SetActive(
+            false
+        );
 
 
-        brickPools[brickColor].Enqueue(brick);
+        brickPools[brickColor].Enqueue(
+            brick
+        );
     }
 }

@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class CharacterStack : MonoBehaviour
+public class CharacterStack : MonoBehaviour, IBrickModifierTarget
 {
     [Header("References")]
     [SerializeField] private Transform stackPoint;
     [SerializeField] private BrickPoolManager brickPoolManager;
 
     [Header("Stack Settings")]
-    [SerializeField] private float verticalSpacing = 0.28f;
+    [SerializeField] private float verticalSpacing = 0.19f;
 
     [Header("Collect Animation")]
     [SerializeField] private float collectDuration = 0.25f;
@@ -35,10 +35,23 @@ public class CharacterStack : MonoBehaviour
         collectedBricks.Count;
 
 
+    public int CurrentBrickCount =>
+        BrickCount;
+
+
     private void Awake()
     {
         ownerCharacter =
             GetComponent<CharacterBase>();
+
+
+        if (ownerCharacter == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " üzerinde CharacterBase bulunamadı!"
+            );
+        }
 
 
         if (stackPoint == null)
@@ -67,6 +80,10 @@ public class CharacterStack : MonoBehaviour
     }
 
 
+    // ==========================================
+    // NORMAL BRICK TOPLAMA
+    // ==========================================
+
     public void AddBrick(Brick brick)
     {
         if (brick == null)
@@ -74,9 +91,20 @@ public class CharacterStack : MonoBehaviour
             return;
         }
 
+
         if (stackPoint == null)
         {
             return;
+        }
+
+
+        // Brick stack'e geldiğinde collider kapalı olmalı.
+        // +7 kapısında Brick direkt Pool'dan geldiği
+        // için özellikle gerekli.
+        if (brick.TryGetComponent<Collider>(
+                out Collider brickCollider))
+        {
+            brickCollider.enabled = false;
         }
 
 
@@ -84,7 +112,9 @@ public class CharacterStack : MonoBehaviour
             collectedBricks.Count;
 
 
-        collectedBricks.Add(brick);
+        collectedBricks.Add(
+            brick
+        );
 
 
         Vector3 targetLocalPosition =
@@ -126,12 +156,17 @@ public class CharacterStack : MonoBehaviour
     }
 
 
+    // ==========================================
+    // BRIDGE YAPARKEN 1 BRICK HARCA
+    // ==========================================
+
     public bool TrySpendBrick()
     {
         if (collectedBricks.Count <= 0)
         {
             return false;
         }
+
 
         if (brickPoolManager == null)
         {
@@ -170,6 +205,11 @@ public class CharacterStack : MonoBehaviour
     }
 
 
+    // ==========================================
+    // KNOCKBACK
+    // BRICKLERİ YERE SAÇ
+    // ==========================================
+
     public int DropBricks(int amount)
     {
         if (amount <= 0)
@@ -177,20 +217,25 @@ public class CharacterStack : MonoBehaviour
             return 0;
         }
 
+
         if (collectedBricks.Count <= 0)
         {
             return 0;
         }
 
 
-        int dropCount = Mathf.Min(
-            amount,
-            collectedBricks.Count
-        );
+        int dropCount =
+            Mathf.Min(
+                amount,
+                collectedBricks.Count
+            );
 
 
         float startAngle =
-            Random.Range(0f, 360f);
+            Random.Range(
+                0f,
+                360f
+            );
 
 
         for (int i = 0; i < dropCount; i++)
@@ -209,6 +254,7 @@ public class CharacterStack : MonoBehaviour
 
 
             brickToDrop.transform.DOKill();
+
 
             brickToDrop.PrepareForDrop();
 
@@ -268,7 +314,10 @@ public class CharacterStack : MonoBehaviour
             brickToDrop.transform.DORotate(
                 new Vector3(
                     0f,
-                    Random.Range(0f, 360f),
+                    Random.Range(
+                        0f,
+                        360f
+                    ),
                     0f
                 ),
                 dropDuration
@@ -283,5 +332,140 @@ public class CharacterStack : MonoBehaviour
 
 
         return dropCount;
+    }
+
+
+    // ==========================================
+    // +7 / +X MODIFIER GATE
+    // ==========================================
+
+    public void AddBricks(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+
+        if (brickPoolManager == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " için BrickPoolManager bulunamadı!"
+            );
+
+            return;
+        }
+
+
+        if (ownerCharacter == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " için CharacterBase bulunamadı!"
+            );
+
+            return;
+        }
+
+
+        TeamColor characterColor =
+            ownerCharacter.CharacterTeamColor;
+
+
+        for (int i = 0; i < amount; i++)
+        {
+            Brick newBrick =
+                brickPoolManager.GetBrickFromPool(
+                    characterColor
+                );
+
+
+            // Pool boşaldıysa daha fazla Brick ekleme.
+            if (newBrick == null)
+            {
+                break;
+            }
+
+
+            // Brick önce karakterin bulunduğu
+            // noktadan stack'e doğru uçsun.
+            newBrick.transform.position =
+                transform.position +
+                Vector3.up * 0.5f;
+
+
+            newBrick.transform.rotation =
+                Quaternion.identity;
+
+
+            AddBrick(
+                newBrick
+            );
+        }
+    }
+
+
+    // ==========================================
+    // -5 / -10 MODIFIER GATE
+    // ==========================================
+
+    public void RemoveBricks(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+
+        if (brickPoolManager == null)
+        {
+            return;
+        }
+
+
+        if (collectedBricks.Count <= 0)
+        {
+            return;
+        }
+
+
+        int removeCount =
+            Mathf.Min(
+                amount,
+                collectedBricks.Count
+            );
+
+
+        for (int i = 0; i < removeCount; i++)
+        {
+            int lastIndex =
+                collectedBricks.Count - 1;
+
+
+            Brick brickToRemove =
+                collectedBricks[lastIndex];
+
+
+            collectedBricks.RemoveAt(
+                lastIndex
+            );
+
+
+            brickToRemove.transform.DOKill();
+
+
+            // Negatif gate'te Brick yere saçılmaz.
+            // Direkt Pool'a geri döner.
+            brickPoolManager.ReturnBrickToPool(
+                brickToRemove
+            );
+        }
+
+
+        EventManager.BrickSpent(
+            ownerCharacter,
+            BrickCount
+        );
     }
 }
