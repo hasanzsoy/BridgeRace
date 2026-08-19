@@ -20025,24 +20025,34 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 12
   characterStack: {fileID: 1225986540}
+  navMeshAgent: {fileID: 0}
   startBrickArea: {fileID: 1177964738}
   middleBrickArea: {fileID: 800809429}
+  middle02BrickArea: {fileID: 0}
   bridge1Start: {fileID: 1191822655}
   bridge1End: {fileID: 1628815967}
   bridge2Start: {fileID: 144034283}
   bridge2End: {fileID: 1652600283}
+  bridge3Start: {fileID: 0}
+  bridge3End: {fileID: 0}
   finishTarget: {fileID: 1826825346}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
+  navMeshSampleDistance: 2.5
   easyMoveSpeed: 4.2
-  normalMoveSpeed: 5
-  hardMoveSpeed: 5.7
   easySearchInterval: 0.45
+  easyMinBricks: 5
+  easyMaxBricks: 12
+  normalMoveSpeed: 5
   normalSearchInterval: 0.25
+  normalBrickGoal: 8
+  hardMoveSpeed: 5.7
   hardSearchInterval: 0.12
-  separationRadius: 1.7
-  separationStrength: 1.15
-  separationHeightDifference: 1.5
+  hardClusterRadius: 4
+  hardAggressionRange: 3
+  hardAggressionMinimumBricks: 4
+  bridgeStallTime: 0.8
+  bridgeProgressThreshold: 0.05
 --- !u!195 &1225986551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -22374,6 +22384,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3783b05277e568147965bae1b1aad107, type: 3}
+--- !u!1 &1399205433
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1399205434}
+  m_Layer: 0
+  m_Name: AI_FinalBridge_End
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1399205434
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399205433}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1657066422}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1400262573
 GameObject:
   m_ObjectHideFlags: 0
@@ -25472,6 +25513,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 971699959}
+  - {fileID: 1715978557}
+  - {fileID: 1399205434}
   m_Father: {fileID: 1522832897}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1657806848
@@ -26369,6 +26412,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1711024587}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1715978556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1715978557}
+  m_Layer: 0
+  m_Name: AI_FinalBridge_Start
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1715978557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715978556}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1657066422}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1722994878
 GameObject:
   m_ObjectHideFlags: 0
@@ -28042,24 +28116,34 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 12
   characterStack: {fileID: 1845009206}
+  navMeshAgent: {fileID: 0}
   startBrickArea: {fileID: 1177964738}
   middleBrickArea: {fileID: 800809429}
+  middle02BrickArea: {fileID: 0}
   bridge1Start: {fileID: 1962304115}
   bridge1End: {fileID: 1554585409}
   bridge2Start: {fileID: 2073341624}
   bridge2End: {fileID: 164035345}
+  bridge3Start: {fileID: 0}
+  bridge3End: {fileID: 0}
   finishTarget: {fileID: 1452778728}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
+  navMeshSampleDistance: 2.5
   easyMoveSpeed: 4.2
-  normalMoveSpeed: 5
-  hardMoveSpeed: 5.7
   easySearchInterval: 0.45
+  easyMinBricks: 5
+  easyMaxBricks: 12
+  normalMoveSpeed: 5
   normalSearchInterval: 0.25
+  normalBrickGoal: 8
+  hardMoveSpeed: 5.7
   hardSearchInterval: 0.12
-  separationRadius: 1.7
-  separationStrength: 1.15
-  separationHeightDifference: 1.5
+  hardClusterRadius: 4
+  hardAggressionRange: 3
+  hardAggressionMinimumBricks: 4
+  bridgeStallTime: 0.8
+  bridgeProgressThreshold: 0.05
 --- !u!195 &1845009217
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -31724,7 +31808,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 850c0f5838d8d794e8ff33e0cd49ee06, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &2104055180 stripped
 Transform:
@@ -32513,24 +32597,34 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 12
   characterStack: {fileID: 1126810097801194189}
+  navMeshAgent: {fileID: 8807378013679780326}
   startBrickArea: {fileID: 1177964738}
   middleBrickArea: {fileID: 800809429}
+  middle02BrickArea: {fileID: 775491042}
   bridge1Start: {fileID: 798916804}
   bridge1End: {fileID: 173263329}
   bridge2Start: {fileID: 867539972}
   bridge2End: {fileID: 1478800157}
+  bridge3Start: {fileID: 1715978557}
+  bridge3End: {fileID: 1399205434}
   finishTarget: {fileID: 1204175672}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
+  navMeshSampleDistance: 2.5
   easyMoveSpeed: 4.2
-  normalMoveSpeed: 5
-  hardMoveSpeed: 5.7
   easySearchInterval: 0.45
+  easyMinBricks: 5
+  easyMaxBricks: 12
+  normalMoveSpeed: 5
   normalSearchInterval: 0.25
+  normalBrickGoal: 8
+  hardMoveSpeed: 5.7
   hardSearchInterval: 0.12
-  separationRadius: 1.7
-  separationStrength: 1.15
-  separationHeightDifference: 1.5
+  hardClusterRadius: 4
+  hardAggressionRange: 3
+  hardAggressionMinimumBricks: 4
+  bridgeStallTime: 0.8
+  bridgeProgressThreshold: 0.05
 --- !u!195 &8807378013679780326
 NavMeshAgent:
   m_ObjectHideFlags: 0
