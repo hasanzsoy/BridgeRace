@@ -5213,7 +5213,7 @@ Transform:
   m_GameObject: {fileID: 364568605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -5.5}
+  m_LocalPosition: {x: 0, y: 1, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5251,7 +5251,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 19, y: 3, z: 3}
+  m_Size: {x: 20, y: 4, z: 8}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &365655607
 GameObject:
@@ -9450,6 +9450,7 @@ GameObject:
   - component: {fileID: 630767696}
   - component: {fileID: 630767698}
   - component: {fileID: 630767697}
+  - component: {fileID: 630767699}
   m_Layer: 0
   m_Name: MiddleBrickActivationZone
   m_TagString: Untagged
@@ -9466,7 +9467,7 @@ Transform:
   m_GameObject: {fileID: 630767695}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -7.5}
+  m_LocalPosition: {x: 0, y: 1, z: -6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9504,8 +9505,21 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 24, y: 3, z: 4}
+  m_Size: {x: 24, y: 4, z: 8}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &630767699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630767695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 314cbe2834668414d94f5ba3f825349e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrickAreaActivator
+  brickSpawner: {fileID: 800809430}
 --- !u!4 &636650720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5991897815468568020, guid: 3783b05277e568147965bae1b1aad107, type: 3}
@@ -20025,16 +20039,16 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 12
   characterStack: {fileID: 1225986540}
-  navMeshAgent: {fileID: 0}
+  navMeshAgent: {fileID: 1225986551}
   startBrickArea: {fileID: 1177964738}
   middleBrickArea: {fileID: 800809429}
-  middle02BrickArea: {fileID: 0}
+  middle02BrickArea: {fileID: 775491042}
   bridge1Start: {fileID: 1191822655}
   bridge1End: {fileID: 1628815967}
   bridge2Start: {fileID: 144034283}
   bridge2End: {fileID: 1652600283}
-  bridge3Start: {fileID: 0}
-  bridge3End: {fileID: 0}
+  bridge3Start: {fileID: 1715978557}
+  bridge3End: {fileID: 1399205434}
   finishTarget: {fileID: 1826825346}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
@@ -23453,6 +23467,10 @@ PrefabInstance:
     - target: {fileID: 2731348021033975257, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5408155303520235784, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5573544647052199380, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -28116,16 +28134,16 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 12
   characterStack: {fileID: 1845009206}
-  navMeshAgent: {fileID: 0}
+  navMeshAgent: {fileID: 1845009217}
   startBrickArea: {fileID: 1177964738}
   middleBrickArea: {fileID: 800809429}
-  middle02BrickArea: {fileID: 0}
+  middle02BrickArea: {fileID: 775491042}
   bridge1Start: {fileID: 1962304115}
   bridge1End: {fileID: 1554585409}
   bridge2Start: {fileID: 2073341624}
   bridge2End: {fileID: 164035345}
-  bridge3Start: {fileID: 0}
-  bridge3End: {fileID: 0}
+  bridge3Start: {fileID: 1715978557}
+  bridge3End: {fileID: 1399205434}
   finishTarget: {fileID: 1452778728}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
