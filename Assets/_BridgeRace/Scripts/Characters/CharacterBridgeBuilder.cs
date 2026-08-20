@@ -10,8 +10,9 @@ public class CharacterBridgeBuilder : MonoBehaviour
 
 
     private CharacterBase character;
-
     private CharacterStack characterStack;
+
+    private bool bridgeCheckEnabled = true;
 
 
     public bool IsForwardBlocked
@@ -68,11 +69,16 @@ public class CharacterBridgeBuilder : MonoBehaviour
 
     public void RefreshBridgeCheck()
     {
-        // Her kontrolde önce engeli temizliyoruz.
         IsForwardBlocked = false;
 
         BlockedDirection =
             Vector3.zero;
+
+
+        if (!bridgeCheckEnabled)
+        {
+            return;
+        }
 
 
         if (rayOrigin == null)
@@ -83,8 +89,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
 
         Debug.DrawRay(
             rayOrigin.position,
-            Vector3.down *
-            rayDistance,
+            Vector3.down * rayDistance,
             Color.red
         );
 
@@ -95,6 +100,10 @@ public class CharacterBridgeBuilder : MonoBehaviour
                 out RaycastHit hit,
                 rayDistance,
                 ~0,
+
+                // ÖNEMLİ:
+                // BridgeStep'leri algılamak için
+                // Trigger collider'ları da kontrol ediyoruz.
                 QueryTriggerInteraction.Collide))
         {
             if (hit.collider.TryGetComponent<IBuildable>(
@@ -125,7 +134,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
 
 
         // Step zaten bizim rengimizse
-        // rahatça yürüyebiliriz.
+        // rahatça yürü.
         if (!buildable.NeedsBuild(
                 characterColor))
         {
@@ -133,8 +142,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Rakip Step veya boş Step var.
-        // Brick yoksa ileri hareketi engelle.
+        // Brick yoksa ilerlemeyi engelle.
         if (characterStack.BrickCount <= 0)
         {
             BlockMovement(
@@ -145,7 +153,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Brick harcamayı dene.
+        // Brick harca.
         bool brickSpent =
             characterStack.TrySpendBrick();
 
@@ -160,8 +168,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Brick varsa Step'i
-        // kendi rengimize çevir.
+        // Step'i karakterin rengine boya/build et.
         buildable.BuildStep(
             characterColor
         );
@@ -196,10 +203,30 @@ public class CharacterBridgeBuilder : MonoBehaviour
     }
 
 
+    public void SetBridgeCheckEnabled(
+        bool enabled)
+    {
+        bridgeCheckEnabled =
+            enabled;
+
+
+        if (!enabled)
+        {
+            IsForwardBlocked =
+                false;
+
+
+            BlockedDirection =
+                Vector3.zero;
+        }
+    }
+
+
     private void OnDisable()
     {
         IsForwardBlocked =
             false;
+
 
         BlockedDirection =
             Vector3.zero;

@@ -40,6 +40,9 @@ public class AIController : CharacterBase
     [SerializeField] private NavMeshAgent navMeshAgent;
 
 
+    private CharacterBridgeBuilder bridgeBuilder;
+
+
     // =====================================================
     // BRICK AREAS
     // =====================================================
@@ -49,8 +52,6 @@ public class AIController : CharacterBase
     [SerializeField]
     private BoxCollider startBrickArea;
 
-    // Eski middleBrickArea ismini özellikle korudum.
-    // Inspector bağlantın kaybolmasın.
     [SerializeField]
     private BoxCollider middleBrickArea;
 
@@ -108,7 +109,7 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // GENERAL AI SETTINGS
+    // AI SETTINGS
     // =====================================================
 
     [Header("AI Settings")]
@@ -116,28 +117,24 @@ public class AIController : CharacterBase
     [SerializeField]
     private int bricksNeededForBridge = 20;
 
+
     [SerializeField]
     private float pointReachedDistance = 0.8f;
 
 
     // =====================================================
-    // NAVMESH SETTINGS
+    // NAVMESH
     // =====================================================
 
     [Header("NavMesh Settings")]
 
     [SerializeField]
-    private float navMeshSampleDistance = 2.5f;
+    private float navMeshSampleDistance = 3f;
 
 
     // =====================================================
-    // DIFFICULTY
+    // EASY
     // =====================================================
-
-    [Header("Difficulty Settings")]
-
-    private AIDifficulty difficulty;
-
 
     [Header("Easy")]
 
@@ -154,6 +151,10 @@ public class AIController : CharacterBase
     private int easyMaxBricks = 12;
 
 
+    // =====================================================
+    // NORMAL
+    // =====================================================
+
     [Header("Normal")]
 
     [SerializeField]
@@ -166,6 +167,10 @@ public class AIController : CharacterBase
     private int normalBrickGoal = 8;
 
 
+    // =====================================================
+    // HARD
+    // =====================================================
+
     [Header("Hard")]
 
     [SerializeField]
@@ -177,24 +182,21 @@ public class AIController : CharacterBase
     [SerializeField]
     private float hardClusterRadius = 4f;
 
-    [SerializeField]
-    private float hardAggressionRange = 3f;
-
-    [SerializeField]
-    private int hardAggressionMinimumBricks = 4;
-
 
     // =====================================================
-    // BRIDGE STALL
+    // BRIDGE SETTINGS
     // =====================================================
 
     [Header("Bridge Recovery")]
 
     [SerializeField]
-    private float bridgeStallTime = 0.8f;
+    private float bridgeStallTime = 0.6f;
 
     [SerializeField]
-    private float bridgeProgressThreshold = 0.05f;
+    private float bridgeProgressThreshold = 0.015f;
+
+    [SerializeField]
+    private float bridgeLookAhead = 2f;
 
 
     // =====================================================
@@ -203,6 +205,9 @@ public class AIController : CharacterBase
 
     private AIState currentState =
         AIState.CollectingStart;
+
+
+    private AIDifficulty difficulty;
 
 
     private Brick targetBrick;
@@ -219,18 +224,13 @@ public class AIController : CharacterBase
     private float lastBridgeDistance =
         Mathf.Infinity;
 
+
     private float bridgeStallTimer;
-
-
-    private CharacterBase[] allCharacters;
 
 
     private Vector3 lastNavDestination;
 
     private bool hasNavDestination;
-
-
-    private bool navMeshWarningShown;
 
 
     // =====================================================
@@ -256,24 +256,8 @@ public class AIController : CharacterBase
         }
 
 
-        if (characterStack == null)
-        {
-            Debug.LogError(
-                gameObject.name +
-                " üzerinde CharacterStack bulunamadı!"
-            );
-        }
-
-
-        if (navMeshAgent == null)
-        {
-            Debug.LogError(
-                gameObject.name +
-                " üzerinde NavMeshAgent bulunamadı!"
-            );
-
-            return;
-        }
+        bridgeBuilder =
+            GetComponent<CharacterBridgeBuilder>();
 
 
         difficulty =
@@ -293,12 +277,6 @@ public class AIController : CharacterBase
 
     private void Start()
     {
-        allCharacters =
-            FindObjectsByType<CharacterBase>(
-                FindObjectsSortMode.None
-            );
-
-
         SnapAgentToCurrentPosition();
 
 
@@ -340,10 +318,6 @@ public class AIController : CharacterBase
     {
         switch (currentState)
         {
-            // =============================================
-            // START
-            // =============================================
-
             case AIState.CollectingStart:
 
                 CollectBricks(
@@ -353,10 +327,6 @@ public class AIController : CharacterBase
 
                 break;
 
-
-            // =============================================
-            // BRIDGE 1
-            // =============================================
 
             case AIState.MovingToBridge1:
 
@@ -371,6 +341,7 @@ public class AIController : CharacterBase
             case AIState.CrossingBridge1:
 
                 CrossBridge(
+                    bridge1Start,
                     bridge1End,
                     AIState.CollectingMiddle01,
                     AIState.ReturningFromBridge1
@@ -381,17 +352,14 @@ public class AIController : CharacterBase
 
             case AIState.ReturningFromBridge1:
 
-                ReturnToCollectionArea(
+                ReturnAcrossBridge(
+                    bridge1End,
                     bridge1Start,
                     AIState.CollectingStart
                 );
 
                 break;
 
-
-            // =============================================
-            // MIDDLE 01
-            // =============================================
 
             case AIState.CollectingMiddle01:
 
@@ -402,10 +370,6 @@ public class AIController : CharacterBase
 
                 break;
 
-
-            // =============================================
-            // BRIDGE 2
-            // =============================================
 
             case AIState.MovingToBridge2:
 
@@ -420,6 +384,7 @@ public class AIController : CharacterBase
             case AIState.CrossingBridge2:
 
                 CrossBridge(
+                    bridge2Start,
                     bridge2End,
                     AIState.CollectingMiddle02,
                     AIState.ReturningFromBridge2
@@ -430,17 +395,14 @@ public class AIController : CharacterBase
 
             case AIState.ReturningFromBridge2:
 
-                ReturnToCollectionArea(
+                ReturnAcrossBridge(
+                    bridge2End,
                     bridge2Start,
                     AIState.CollectingMiddle01
                 );
 
                 break;
 
-
-            // =============================================
-            // MIDDLE 02
-            // =============================================
 
             case AIState.CollectingMiddle02:
 
@@ -451,10 +413,6 @@ public class AIController : CharacterBase
 
                 break;
 
-
-            // =============================================
-            // FINAL BRIDGE
-            // =============================================
 
             case AIState.MovingToBridge3:
 
@@ -469,6 +427,7 @@ public class AIController : CharacterBase
             case AIState.CrossingBridge3:
 
                 CrossBridge(
+                    bridge3Start,
                     bridge3End,
                     AIState.MovingToFinish,
                     AIState.ReturningFromBridge3
@@ -479,17 +438,14 @@ public class AIController : CharacterBase
 
             case AIState.ReturningFromBridge3:
 
-                ReturnToCollectionArea(
+                ReturnAcrossBridge(
+                    bridge3End,
                     bridge3Start,
                     AIState.CollectingMiddle02
                 );
 
                 break;
 
-
-            // =============================================
-            // FINISH
-            // =============================================
 
             case AIState.MovingToFinish:
 
@@ -504,46 +460,6 @@ public class AIController : CharacterBase
 
                 break;
         }
-    }
-
-
-    // =====================================================
-    // NAVMESH SETUP
-    // =====================================================
-
-    private void SetupNavMeshAgent()
-    {
-        if (navMeshAgent == null)
-        {
-            return;
-        }
-
-
-        // NavMeshAgent yolu hesaplasın.
-        // Rigidbody gerçek hareketi yapsın.
-        navMeshAgent.updatePosition = false;
-
-        navMeshAgent.updateRotation = false;
-
-
-        navMeshAgent.speed =
-            moveSpeed;
-
-
-        navMeshAgent.angularSpeed =
-            720f;
-
-
-        navMeshAgent.acceleration =
-            20f;
-
-
-        navMeshAgent.stoppingDistance =
-            0.2f;
-
-
-        navMeshAgent.autoBraking =
-            true;
     }
 
 
@@ -599,10 +515,6 @@ public class AIController : CharacterBase
     }
 
 
-    // =====================================================
-    // COLLECTION GOAL
-    // =====================================================
-
     private void PrepareCollectionGoal()
     {
         switch (difficulty)
@@ -644,7 +556,7 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // COLLECT BRICKS
+    // COLLECT
     // =====================================================
 
     private void CollectBricks(
@@ -653,15 +565,12 @@ public class AIController : CharacterBase
     {
         if (characterStack == null)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
             return;
         }
 
 
-        // Yeterli Brick toplandı.
         if (characterStack.BrickCount >=
             currentBrickGoal)
         {
@@ -677,30 +586,12 @@ public class AIController : CharacterBase
         }
 
 
-        // HARD modda yakın ve bizden daha zayıf
-        // rakip varsa kısa süreli agresif hareket.
-        if (difficulty ==
-            AIDifficulty.Hard)
-        {
-            if (TryGetHardAggressionTarget(
-                    out Vector3 aggressionTarget))
-            {
-                MoveUsingNavMesh(
-                    aggressionTarget
-                );
-
-                return;
-            }
-        }
-
-
-        // Mevcut Brick artık geçerli değilse
-        // yeni Brick ara.
         if (!IsTargetBrickValid(
                 targetBrick,
                 brickArea))
         {
-            targetBrick = null;
+            targetBrick =
+                null;
 
 
             if (Time.time >=
@@ -719,10 +610,17 @@ public class AIController : CharacterBase
         }
 
 
+        // =================================================
+        // ÇOK ÖNEMLİ:
+        // Brick henüz spawn olmadıysa artık DONMUYOR.
+        // Brick alanının merkezine ilerliyor.
+        // Böylece ActivationZone'u tetikliyor.
+        // =================================================
+
         if (targetBrick == null)
         {
-            SetMoveDirection(
-                Vector3.zero
+            MoveToBrickAreaCenter(
+                brickArea
             );
 
             return;
@@ -735,20 +633,45 @@ public class AIController : CharacterBase
     }
 
 
+    private void MoveToBrickAreaCenter(
+        BoxCollider area)
+    {
+        if (area == null)
+        {
+            StopMovement();
+
+            return;
+        }
+
+
+        Vector3 target =
+            area.bounds.center;
+
+
+        target.y =
+            transform.position.y;
+
+
+        MoveUsingNavMesh(
+            target
+        );
+    }
+
+
     // =====================================================
-    // FIND BRICK ACCORDING TO DIFFICULTY
+    // BRICK SEARCH
     // =====================================================
 
     private Brick FindBrickTarget(
         BoxCollider brickArea)
     {
-        List<Brick> candidates =
+        List<Brick> bricks =
             GetValidBricks(
                 brickArea
             );
 
 
-        if (candidates.Count <= 0)
+        if (bricks.Count == 0)
         {
             return null;
         }
@@ -758,22 +681,25 @@ public class AIController : CharacterBase
         {
             case AIDifficulty.Easy:
 
-                return FindRandomBrick(
-                    candidates
-                );
+                return bricks[
+                    Random.Range(
+                        0,
+                        bricks.Count
+                    )
+                ];
 
 
             case AIDifficulty.Normal:
 
                 return FindNearestBrick(
-                    candidates
+                    bricks
                 );
 
 
             case AIDifficulty.Hard:
 
                 return FindClusterBrick(
-                    candidates
+                    bricks
                 );
         }
 
@@ -782,20 +708,16 @@ public class AIController : CharacterBase
     }
 
 
-    // =====================================================
-    // VALID BRICK LIST
-    // =====================================================
-
     private List<Brick> GetValidBricks(
         BoxCollider brickArea)
     {
-        List<Brick> validBricks =
+        List<Brick> result =
             new List<Brick>();
 
 
         if (brickArea == null)
         {
-            return validBricks;
+            return result;
         }
 
 
@@ -834,117 +756,84 @@ public class AIController : CharacterBase
             }
 
 
-            validBricks.Add(
+            result.Add(
                 brick
             );
         }
 
 
-        return validBricks;
+        return result;
     }
 
-
-    // =====================================================
-    // EASY
-    // RANDOM BRICK
-    // =====================================================
-
-    private Brick FindRandomBrick(
-        List<Brick> bricks)
-    {
-        if (bricks.Count <= 0)
-        {
-            return null;
-        }
-
-
-        int randomIndex =
-            Random.Range(
-                0,
-                bricks.Count
-            );
-
-
-        return bricks[randomIndex];
-    }
-
-
-    // =====================================================
-    // NORMAL
-    // NEAREST BRICK
-    // =====================================================
 
     private Brick FindNearestBrick(
         List<Brick> bricks)
     {
-        Brick nearestBrick = null;
+        Brick nearest =
+            null;
 
 
-        float nearestDistance =
+        float bestDistance =
             Mathf.Infinity;
 
 
         foreach (Brick brick in bricks)
         {
             float distance =
-                GetHorizontalDistanceSquared(
+                HorizontalDistanceSquared(
                     transform.position,
                     brick.transform.position
                 );
 
 
             if (distance <
-                nearestDistance)
+                bestDistance)
             {
-                nearestDistance =
+                bestDistance =
                     distance;
 
 
-                nearestBrick =
+                nearest =
                     brick;
             }
         }
 
 
-        return nearestBrick;
+        return nearest;
     }
 
-
-    // =====================================================
-    // HARD
-    // CLUSTER SELECTION
-    // =====================================================
 
     private Brick FindClusterBrick(
         List<Brick> bricks)
     {
-        Brick bestBrick = null;
+        Brick best =
+            null;
 
 
         float bestScore =
             Mathf.NegativeInfinity;
 
 
-        float clusterRadiusSquared =
+        float radiusSquared =
             hardClusterRadius *
             hardClusterRadius;
 
 
         foreach (Brick candidate in bricks)
         {
-            int nearbyBrickCount = 0;
+            int nearbyCount = 0;
 
 
-            foreach (Brick otherBrick in bricks)
+            foreach (Brick other in bricks)
             {
-                if (otherBrick == candidate)
+                if (other == candidate)
                 {
                     continue;
                 }
 
 
                 Vector3 difference =
-                    otherBrick.transform.position -
+                    other.transform.position -
                     candidate.transform.position;
 
 
@@ -952,26 +841,22 @@ public class AIController : CharacterBase
 
 
                 if (difference.sqrMagnitude <=
-                    clusterRadiusSquared)
+                    radiusSquared)
                 {
-                    nearbyBrickCount++;
+                    nearbyCount++;
                 }
             }
 
 
             float distance =
-                GetHorizontalDistanceSquared(
+                HorizontalDistanceSquared(
                     transform.position,
                     candidate.transform.position
                 );
 
 
-            // Yakınında çok Brick olması
-            // skoru yükseltir.
-            //
-            // Çok uzakta olması skoru düşürür.
             float score =
-                nearbyBrickCount * 10f -
+                nearbyCount * 10f -
                 distance * 0.1f;
 
 
@@ -981,137 +866,15 @@ public class AIController : CharacterBase
                 bestScore =
                     score;
 
-
-                bestBrick =
+                best =
                     candidate;
             }
         }
 
 
-        return bestBrick;
+        return best;
     }
 
-
-    // =====================================================
-    // HARD AGGRESSION
-    // =====================================================
-
-    private bool TryGetHardAggressionTarget(
-        out Vector3 targetPosition)
-    {
-        targetPosition =
-            Vector3.zero;
-
-
-        if (characterStack == null)
-        {
-            return false;
-        }
-
-
-        if (characterStack.BrickCount <
-            hardAggressionMinimumBricks)
-        {
-            return false;
-        }
-
-
-        if (allCharacters == null)
-        {
-            return false;
-        }
-
-
-        CharacterBase nearestOpponent =
-            null;
-
-
-        float nearestDistance =
-            hardAggressionRange *
-            hardAggressionRange;
-
-
-        foreach (CharacterBase otherCharacter
-                 in allCharacters)
-        {
-            if (otherCharacter == null)
-            {
-                continue;
-            }
-
-
-            if (otherCharacter == this)
-            {
-                continue;
-            }
-
-
-            float heightDifference =
-                Mathf.Abs(
-                    otherCharacter.transform.position.y -
-                    transform.position.y
-                );
-
-
-            if (heightDifference > 1.5f)
-            {
-                continue;
-            }
-
-
-            if (!otherCharacter.TryGetComponent<CharacterStack>(
-                    out CharacterStack otherStack))
-            {
-                continue;
-            }
-
-
-            // Bizde daha fazla Brick yoksa
-            // saldırma.
-            if (characterStack.BrickCount <=
-                otherStack.BrickCount)
-            {
-                continue;
-            }
-
-
-            float distance =
-                GetHorizontalDistanceSquared(
-                    transform.position,
-                    otherCharacter.transform.position
-                );
-
-
-            if (distance <
-                nearestDistance)
-            {
-                nearestDistance =
-                    distance;
-
-
-                nearestOpponent =
-                    otherCharacter;
-            }
-        }
-
-
-        if (nearestOpponent == null)
-        {
-            return false;
-        }
-
-
-        targetPosition =
-            nearestOpponent.transform.position;
-
-
-        return true;
-    }
-
-
-    // =====================================================
-    // BRICK VALIDATION
-    // =====================================================
 
     private bool IsTargetBrickValid(
         Brick brick,
@@ -1157,54 +920,67 @@ public class AIController : CharacterBase
             area.bounds;
 
 
-        bool insideX =
+        return
             position.x >= bounds.min.x &&
-            position.x <= bounds.max.x;
-
-
-        bool insideZ =
+            position.x <= bounds.max.x &&
             position.z >= bounds.min.z &&
             position.z <= bounds.max.z;
-
-
-        return insideX &&
-               insideZ;
     }
 
 
     // =====================================================
-    // MOVE TO BRIDGE START USING NAVMESH
+    // BRIDGE START
     // =====================================================
 
     private void MoveToPointWithNavMesh(
-        Transform target,
-        AIState nextState)
+    Transform target,
+    AIState nextState)
     {
         if (target == null)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
             return;
         }
 
 
+        Vector3 reachableTarget =
+            target.position;
+
+
+        // Hedef Bridge'in üzerinde veya
+        // NavMesh dışında olabilir.
+        // AI'nın gerçekten ulaşabileceği
+        // en yakın NavMesh noktasını buluyoruz.
+        if (NavMesh.SamplePosition(
+                target.position,
+                out NavMeshHit hit,
+                navMeshSampleDistance,
+                NavMesh.AllAreas))
+        {
+            reachableTarget =
+                hit.position;
+        }
+
+
         MoveUsingNavMesh(
-            target.position
+            reachableTarget
         );
 
 
         float distance =
-            GetHorizontalDistance(
+            HorizontalDistance(
                 transform.position,
-                target.position
+                reachableTarget
             );
 
 
         if (distance <=
             pointReachedDistance)
         {
+            StopMovement();
+
+
             ResetNavigation();
 
 
@@ -1216,49 +992,52 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // CROSS BRIDGE
+    // BRIDGE CROSS
     // =====================================================
 
     private void CrossBridge(
+        Transform bridgeStart,
         Transform bridgeEnd,
         AIState nextState,
         AIState returnState)
     {
-        if (bridgeEnd == null)
+        if (bridgeStart == null ||
+            bridgeEnd == null)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
             return;
         }
 
 
-        // Köprü üzerinde NavMesh kullanmıyoruz.
-        // CharacterBase + CharacterBridgeBuilder
-        // mevcut köprü mantığını yönetsin.
         ResetNavigation();
 
 
-        MoveDirectlyTowards(
-            bridgeEnd.position
+        if (bridgeBuilder != null)
+        {
+            bridgeBuilder.SetBridgeCheckEnabled(
+                true
+            );
+        }
+
+
+        MoveAlongBridgeLane(
+            bridgeStart,
+            bridgeEnd
         );
 
 
         float distance =
-            GetHorizontalDistance(
+            HorizontalDistance(
                 transform.position,
                 bridgeEnd.position
             );
 
 
-        // Köprünün sonuna ulaştık.
         if (distance <=
             pointReachedDistance)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
 
             SnapAgentToCurrentPosition();
@@ -1281,79 +1060,16 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // BRIDGE STALL
+    // BRIDGE RETURN
     // =====================================================
 
-    private void CheckBridgeStall(
-        float currentDistance,
-        AIState returnState)
-    {
-        if (characterStack == null)
-        {
-            return;
-        }
-
-
-        if (float.IsInfinity(
-                lastBridgeDistance))
-        {
-            lastBridgeDistance =
-                currentDistance;
-
-            return;
-        }
-
-
-        float progress =
-            lastBridgeDistance -
-            currentDistance;
-
-
-        // Gerçek ilerleme varsa timer sıfırlanır.
-        if (progress >=
-            bridgeProgressThreshold)
-        {
-            bridgeStallTimer = 0f;
-        }
-
-        // Brick kalmadı ve ilerleme yok.
-        else if (characterStack.BrickCount <= 0)
-        {
-            bridgeStallTimer +=
-                Time.deltaTime;
-        }
-
-        else
-        {
-            bridgeStallTimer = 0f;
-        }
-
-
-        lastBridgeDistance =
-            currentDistance;
-
-
-        // Brick bitti ve karakter köprüde
-        // ilerleyemiyorsa geri dön.
-        if (bridgeStallTimer >=
-            bridgeStallTime)
-        {
-            ChangeState(
-                returnState
-            );
-        }
-    }
-
-
-    // =====================================================
-    // RETURN TO BRICK AREA
-    // =====================================================
-
-    private void ReturnToCollectionArea(
+    private void ReturnAcrossBridge(
+        Transform bridgeEnd,
         Transform bridgeStart,
         AIState collectingState)
     {
-        if (bridgeStart == null)
+        if (bridgeStart == null ||
+            bridgeEnd == null)
         {
             return;
         }
@@ -1362,24 +1078,36 @@ public class AIController : CharacterBase
         ResetNavigation();
 
 
-        MoveDirectlyTowards(
-            bridgeStart.position
+        // Geri dönerken bridge builder artık
+        // hareketimizi engellemesin.
+        if (bridgeBuilder != null)
+        {
+            bridgeBuilder.SetBridgeCheckEnabled(
+                false
+            );
+        }
+
+
+        MoveAlongBridgeLane(
+            bridgeEnd,
+            bridgeStart
         );
 
 
-        float distance =
-            GetHorizontalDistance(
+        if (HorizontalDistance(
                 transform.position,
-                bridgeStart.position
-            );
-
-
-        if (distance <=
+                bridgeStart.position) <=
             pointReachedDistance)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
+
+
+            if (bridgeBuilder != null)
+            {
+                bridgeBuilder.SetBridgeCheckEnabled(
+                    true
+                );
+            }
 
 
             SnapAgentToCurrentPosition();
@@ -1393,6 +1121,177 @@ public class AIController : CharacterBase
 
 
     // =====================================================
+    // BRIDGE LANE FOLLOW
+    // =====================================================
+
+    private void MoveAlongBridgeLane(
+        Transform from,
+        Transform to)
+    {
+        Vector3 start =
+            from.position;
+
+
+        Vector3 end =
+            to.position;
+
+
+        start.y = 0f;
+
+        end.y = 0f;
+
+
+        Vector3 current =
+            transform.position;
+
+
+        current.y = 0f;
+
+
+        Vector3 lane =
+            end - start;
+
+
+        float laneLength =
+            lane.magnitude;
+
+
+        if (laneLength <
+            0.01f)
+        {
+            StopMovement();
+
+            return;
+        }
+
+
+        Vector3 laneDirection =
+            lane /
+            laneLength;
+
+
+        Vector3 fromStart =
+            current - start;
+
+
+        float progress =
+            Vector3.Dot(
+                fromStart,
+                laneDirection
+            );
+
+
+        progress =
+            Mathf.Clamp(
+                progress,
+                0f,
+                laneLength
+            );
+
+
+        float targetProgress =
+            Mathf.Min(
+                progress +
+                bridgeLookAhead,
+                laneLength
+            );
+
+
+        Vector3 laneTarget =
+            start +
+            laneDirection *
+            targetProgress;
+
+
+        Vector3 direction =
+            laneTarget -
+            current;
+
+
+        direction.y = 0f;
+
+
+        if (direction.sqrMagnitude <
+            0.001f)
+        {
+            direction =
+                end -
+                current;
+        }
+
+
+        direction.y = 0f;
+
+
+        SetMoveDirection(
+            direction.normalized
+        );
+    }
+
+
+    // =====================================================
+    // BRIDGE STALL
+    // =====================================================
+
+    private void CheckBridgeStall(
+        float distance,
+        AIState returnState)
+    {
+        if (characterStack == null)
+        {
+            return;
+        }
+
+
+        if (float.IsInfinity(
+                lastBridgeDistance))
+        {
+            lastBridgeDistance =
+                distance;
+
+            return;
+        }
+
+
+        float progress =
+            lastBridgeDistance -
+            distance;
+
+
+        if (progress >
+            bridgeProgressThreshold)
+        {
+            bridgeStallTimer =
+                0f;
+        }
+        else if (
+            characterStack.BrickCount <= 0)
+        {
+            bridgeStallTimer +=
+                Time.deltaTime;
+        }
+        else
+        {
+            bridgeStallTimer =
+                0f;
+        }
+
+
+        lastBridgeDistance =
+            distance;
+
+
+        if (bridgeStallTimer >=
+            bridgeStallTime)
+        {
+            ChangeState(
+                returnState
+            );
+        }
+    }
+
+
+    // =====================================================
     // FINISH
     // =====================================================
 
@@ -1400,27 +1299,7 @@ public class AIController : CharacterBase
     {
         if (finishTarget == null)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
-
-            return;
-        }
-
-
-        float distance =
-            GetHorizontalDistance(
-                transform.position,
-                finishTarget.position
-            );
-
-
-        if (distance <=
-            pointReachedDistance)
-        {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
             return;
         }
@@ -1433,15 +1312,48 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // NAVMESH MOVEMENT
+    // NAVMESH
     // =====================================================
+
+    private void SetupNavMeshAgent()
+    {
+        if (navMeshAgent == null)
+        {
+            return;
+        }
+
+
+        navMeshAgent.updatePosition =
+            false;
+
+
+        navMeshAgent.updateRotation =
+            false;
+
+
+        navMeshAgent.speed =
+            moveSpeed;
+
+
+        navMeshAgent.angularSpeed =
+            720f;
+
+
+        navMeshAgent.acceleration =
+            20f;
+
+
+        navMeshAgent.stoppingDistance =
+            0.2f;
+    }
+
 
     private void MoveUsingNavMesh(
         Vector3 targetPosition)
     {
         if (navMeshAgent == null)
         {
-            MoveDirectlyTowards(
+            MoveDirectly(
                 targetPosition
             );
 
@@ -1449,57 +1361,26 @@ public class AIController : CharacterBase
         }
 
 
-        if (!SnapAgentIfNecessary())
+        if (!EnsureAgentOnNavMesh())
         {
-            // NavMesh bulunamazsa oyun tamamen
-            // kilitlenmesin.
-            MoveDirectlyTowards(
+            MoveDirectly(
                 targetPosition
             );
-
-
-            if (!navMeshWarningShown)
-            {
-                Debug.LogWarning(
-                    gameObject.name +
-                    " NavMesh üzerinde değil! " +
-                    "Bake ve başlangıç konumunu kontrol et."
-                );
-
-
-                navMeshWarningShown =
-                    true;
-            }
-
 
             return;
         }
 
 
-        navMeshWarningShown =
-            false;
-
-
-        if (navMeshAgent.isStopped)
-        {
-            navMeshAgent.isStopped =
-                false;
-        }
-
-
-        // Rigidbody transform'u hareket ettiriyor.
-        // NavMesh simülasyonunu karakterin
-        // X/Z konumuna senkronluyoruz.
-        Vector3 syncedPosition =
+        Vector3 sync =
             transform.position;
 
 
-        syncedPosition.y =
+        sync.y =
             navMeshAgent.nextPosition.y;
 
 
         navMeshAgent.nextPosition =
-            syncedPosition;
+            sync;
 
 
         Vector3 destination =
@@ -1508,16 +1389,16 @@ public class AIController : CharacterBase
 
         if (NavMesh.SamplePosition(
                 targetPosition,
-                out NavMeshHit targetHit,
+                out NavMeshHit hit,
                 navMeshSampleDistance,
                 NavMesh.AllAreas))
         {
             destination =
-                targetHit.position;
+                hit.position;
         }
 
 
-        bool destinationChanged =
+        bool changed =
             !hasNavDestination ||
             (
                 destination -
@@ -1526,22 +1407,15 @@ public class AIController : CharacterBase
             0.04f;
 
 
-        if (destinationChanged)
+        if (changed)
         {
-            bool destinationSet =
-                navMeshAgent.SetDestination(
-                    destination
-                );
+            navMeshAgent.isStopped =
+                false;
 
 
-            if (!destinationSet)
-            {
-                SetMoveDirection(
-                    Vector3.zero
-                );
-
-                return;
-            }
+            navMeshAgent.SetDestination(
+                destination
+            );
 
 
             lastNavDestination =
@@ -1555,60 +1429,12 @@ public class AIController : CharacterBase
 
         if (navMeshAgent.pathPending)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
-
             return;
         }
 
 
-        if (navMeshAgent.pathStatus ==
-            NavMeshPathStatus.PathInvalid)
-        {
-            SetMoveDirection(
-                Vector3.zero
-            );
-
-            return;
-        }
-
-
-        Vector3 desiredDirection =
-            navMeshAgent.desiredVelocity;
-
-
-        desiredDirection.y = 0f;
-
-
-        if (desiredDirection.sqrMagnitude <
-            0.001f)
-        {
-            SetMoveDirection(
-                Vector3.zero
-            );
-
-            return;
-        }
-
-
-        SetMoveDirection(
-            desiredDirection.normalized
-        );
-    }
-
-
-    // =====================================================
-    // DIRECT MOVEMENT
-    // BRIDGE ONLY
-    // =====================================================
-
-    private void MoveDirectlyTowards(
-        Vector3 targetPosition)
-    {
         Vector3 direction =
-            targetPosition -
-            transform.position;
+            navMeshAgent.desiredVelocity;
 
 
         direction.y = 0f;
@@ -1617,9 +1443,7 @@ public class AIController : CharacterBase
         if (direction.sqrMagnitude <
             0.001f)
         {
-            SetMoveDirection(
-                Vector3.zero
-            );
+            StopMovement();
 
             return;
         }
@@ -1631,19 +1455,36 @@ public class AIController : CharacterBase
     }
 
 
-    // =====================================================
-    // NAVMESH POSITION
-    // =====================================================
-
-    private bool SnapAgentIfNecessary()
+    private void MoveDirectly(
+        Vector3 target)
     {
-        if (navMeshAgent == null)
+        Vector3 direction =
+            target -
+            transform.position;
+
+
+        direction.y = 0f;
+
+
+        if (direction.sqrMagnitude <
+            0.001f)
         {
-            return false;
+            StopMovement();
+
+            return;
         }
 
 
-        if (!navMeshAgent.enabled)
+        SetMoveDirection(
+            direction.normalized
+        );
+    }
+
+
+    private bool EnsureAgentOnNavMesh()
+    {
+        if (navMeshAgent == null ||
+            !navMeshAgent.enabled)
         {
             return false;
         }
@@ -1661,28 +1502,18 @@ public class AIController : CharacterBase
 
     private bool SnapAgentToCurrentPosition()
     {
-        if (navMeshAgent == null)
+        if (navMeshAgent == null ||
+            !navMeshAgent.enabled)
         {
             return false;
         }
 
 
-        if (!navMeshAgent.enabled)
-        {
-            return false;
-        }
-
-
-        bool foundPosition =
-            NavMesh.SamplePosition(
+        if (!NavMesh.SamplePosition(
                 transform.position,
                 out NavMeshHit hit,
                 navMeshSampleDistance,
-                NavMesh.AllAreas
-            );
-
-
-        if (!foundPosition)
+                NavMesh.AllAreas))
         {
             return false;
         }
@@ -1708,13 +1539,6 @@ public class AIController : CharacterBase
             false;
 
 
-        if (navMeshAgent.isOnNavMesh)
-        {
-            navMeshAgent.isStopped =
-                false;
-        }
-
-
         hasNavDestination =
             false;
 
@@ -1723,29 +1547,15 @@ public class AIController : CharacterBase
     }
 
 
-    // =====================================================
-    // RESET NAVIGATION
-    // =====================================================
-
     private void ResetNavigation()
     {
         hasNavDestination =
             false;
 
 
-        if (navMeshAgent == null)
-        {
-            return;
-        }
-
-
-        if (!navMeshAgent.enabled)
-        {
-            return;
-        }
-
-
-        if (!navMeshAgent.isOnNavMesh)
+        if (navMeshAgent == null ||
+            !navMeshAgent.enabled ||
+            !navMeshAgent.isOnNavMesh)
         {
             return;
         }
@@ -1760,7 +1570,151 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // STATE CHANGE
+    // RESPAWN
+    // =====================================================
+
+    public void HandleRespawn()
+    {
+        StopMovement();
+
+
+        ResetNavigation();
+
+
+        SetMovementEnabled(
+            true
+        );
+
+
+        targetBrick =
+            null;
+
+
+        if (bridgeBuilder != null)
+        {
+            bridgeBuilder.SetBridgeCheckEnabled(
+                true
+            );
+        }
+
+
+        switch (currentState)
+        {
+            case AIState.CollectingStart:
+            case AIState.MovingToBridge1:
+            case AIState.CrossingBridge1:
+            case AIState.ReturningFromBridge1:
+
+                ChangeState(
+                    AIState.CollectingStart
+                );
+
+                break;
+
+
+            case AIState.CollectingMiddle01:
+            case AIState.MovingToBridge2:
+            case AIState.CrossingBridge2:
+            case AIState.ReturningFromBridge2:
+
+                ChangeState(
+                    AIState.CollectingMiddle01
+                );
+
+                break;
+
+
+            case AIState.CollectingMiddle02:
+            case AIState.MovingToBridge3:
+            case AIState.CrossingBridge3:
+            case AIState.ReturningFromBridge3:
+
+                ChangeState(
+                    AIState.CollectingMiddle02
+                );
+
+                break;
+
+
+            case AIState.MovingToFinish:
+
+                ChangeState(
+                    AIState.MovingToFinish
+                );
+
+                break;
+
+
+            case AIState.Finished:
+
+                StopAllMovement();
+
+                return;
+        }
+
+
+        SnapAgentToCurrentPosition();
+
+
+        Debug.Log(
+            gameObject.name +
+            " Respawn sonrası AI state düzeltildi."
+        );
+    }
+
+
+    // =====================================================
+    // KNOCKBACK
+    // =====================================================
+
+    private void OnCharacterKnockback(
+        CharacterBase knockedCharacter)
+    {
+        if (knockedCharacter != this)
+        {
+            return;
+        }
+
+
+        // Knockback artık AI state'ini
+        // tamamen değiştirmiyor.
+        //
+        // Böylece küçük bir çarpışmada
+        // karakter aniden geri dönmüyor.
+
+        targetBrick =
+            null;
+
+
+        ResetNavigation();
+    }
+
+
+    // =====================================================
+    // FINISH EVENT
+    // =====================================================
+
+    private void OnCharacterPlaced(
+        CharacterBase placedCharacter,
+        int place)
+    {
+        if (placedCharacter != this)
+        {
+            return;
+        }
+
+
+        ChangeState(
+            AIState.Finished
+        );
+
+
+        StopAllMovement();
+    }
+
+
+    // =====================================================
+    // STATE
     // =====================================================
 
     private void ChangeState(
@@ -1790,6 +1744,23 @@ public class AIController : CharacterBase
             false;
 
 
+        bool returning =
+            newState ==
+                AIState.ReturningFromBridge1 ||
+            newState ==
+                AIState.ReturningFromBridge2 ||
+            newState ==
+                AIState.ReturningFromBridge3;
+
+
+        if (bridgeBuilder != null)
+        {
+            bridgeBuilder.SetBridgeCheckEnabled(
+                !returning
+            );
+        }
+
+
         if (newState ==
                 AIState.CollectingStart ||
             newState ==
@@ -1803,168 +1774,62 @@ public class AIController : CharacterBase
 
 
     // =====================================================
-    // KNOCKBACK
+    // HELPERS
     // =====================================================
 
-    private void OnCharacterKnockback(
-        CharacterBase knockedCharacter)
-    {
-        if (knockedCharacter != this)
-        {
-            return;
-        }
-
-
-        targetBrick =
-            null;
-
-
-        ResetNavigation();
-
-
-        switch (currentState)
-        {
-            // START
-            case AIState.CollectingStart:
-            case AIState.MovingToBridge1:
-
-                ChangeState(
-                    AIState.CollectingStart
-                );
-
-                break;
-
-
-            case AIState.CrossingBridge1:
-
-                ChangeState(
-                    AIState.ReturningFromBridge1
-                );
-
-                break;
-
-
-            // MIDDLE 01
-            case AIState.CollectingMiddle01:
-            case AIState.MovingToBridge2:
-
-                ChangeState(
-                    AIState.CollectingMiddle01
-                );
-
-                break;
-
-
-            case AIState.CrossingBridge2:
-
-                ChangeState(
-                    AIState.ReturningFromBridge2
-                );
-
-                break;
-
-
-            // MIDDLE 02
-            case AIState.CollectingMiddle02:
-            case AIState.MovingToBridge3:
-
-                ChangeState(
-                    AIState.CollectingMiddle02
-                );
-
-                break;
-
-
-            case AIState.CrossingBridge3:
-
-                ChangeState(
-                    AIState.ReturningFromBridge3
-                );
-
-                break;
-
-
-            case AIState.MovingToFinish:
-
-                ChangeState(
-                    AIState.MovingToFinish
-                );
-
-                break;
-        }
-    }
-
-
-    // =====================================================
-    // FINISH EVENT
-    // =====================================================
-
-    private void OnCharacterPlaced(
-        CharacterBase placedCharacter,
-        int place)
-    {
-        if (placedCharacter != this)
-        {
-            return;
-        }
-
-
-        ChangeState(
-            AIState.Finished
-        );
-
-
-        StopAllMovement();
-    }
-
-
-    // =====================================================
-    // STOP
-    // =====================================================
-
-    private void StopAllMovement()
+    private void StopMovement()
     {
         SetMoveDirection(
             Vector3.zero
         );
-
-
-        ResetNavigation();
     }
 
 
-    // =====================================================
-    // DISTANCE
-    // =====================================================
-
-    private float GetHorizontalDistance(
-        Vector3 firstPosition,
-        Vector3 secondPosition)
+    private void StopAllMovement()
     {
-        firstPosition.y = 0f;
+        StopMovement();
 
-        secondPosition.y = 0f;
+
+        ResetNavigation();
+
+
+        if (bridgeBuilder != null)
+        {
+            bridgeBuilder.SetBridgeCheckEnabled(
+                false
+            );
+        }
+    }
+
+
+    private float HorizontalDistance(
+        Vector3 a,
+        Vector3 b)
+    {
+        a.y = 0f;
+
+        b.y = 0f;
 
 
         return Vector3.Distance(
-            firstPosition,
-            secondPosition
+            a,
+            b
         );
     }
 
 
-    private float GetHorizontalDistanceSquared(
-        Vector3 firstPosition,
-        Vector3 secondPosition)
+    private float HorizontalDistanceSquared(
+        Vector3 a,
+        Vector3 b)
     {
-        firstPosition.y = 0f;
+        a.y = 0f;
 
-        secondPosition.y = 0f;
+        b.y = 0f;
 
 
         return (
-            firstPosition -
-            secondPosition
+            a -
+            b
         ).sqrMagnitude;
     }
 }
