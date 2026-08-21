@@ -10658,7 +10658,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &698892614
 Transform:
   m_ObjectHideFlags: 0
@@ -10802,37 +10802,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 964231604856887847, guid: d9641a4f5033fd34287d7325ac183119, type: 3}
   m_PrefabInstance: {fileID: 701840862}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &704149398
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 704149399}
-  m_Layer: 0
-  m_Name: AI_FinishLineTarget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &704149399
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 704149398}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.62, z: 2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1768005139}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &704525416 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5991897815468568020, guid: 3783b05277e568147965bae1b1aad107, type: 3}
@@ -17768,7 +17737,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1100798431
 Transform:
   m_ObjectHideFlags: 0
@@ -20216,7 +20185,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &1225986551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -25863,6 +25831,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1673355328}
   - component: {fileID: 1673355329}
+  - component: {fileID: 1673355330}
   m_Layer: 0
   m_Name: '--- GAME ---  '
   m_TagString: Untagged
@@ -25882,8 +25851,7 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2065189012}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1673355329
@@ -25898,6 +25866,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ff620b0411c6ea4cb9da8564274c637, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EventDebugListener
+--- !u!114 &1673355330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673355327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c49260ea3ee8904a8904129714ab2b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RacePlacementManager
+  firstPlacePoint: {fileID: 508496032}
+  secondPlacePoint: {fileID: 1876017227}
+  thirdPlacePoint: {fileID: 43249039}
+  fourthPlacePoint: {fileID: 698892614}
+  totalRacers: 4
+  podiumMoveDuration: 0.5
 --- !u!1 &1677240241
 GameObject:
   m_ObjectHideFlags: 0
@@ -27176,7 +27162,6 @@ Transform:
   - {fileID: 1677530500}
   - {fileID: 1377554868}
   - {fileID: 1100798431}
-  - {fileID: 704149399}
   m_Father: {fileID: 619654596}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1768623683
@@ -28301,7 +28286,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &1845009217
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -31459,55 +31443,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5991897815468568020, guid: 3783b05277e568147965bae1b1aad107, type: 3}
   m_PrefabInstance: {fileID: 2054848097}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2065189011
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2065189012}
-  - component: {fileID: 2065189013}
-  m_Layer: 0
-  m_Name: RacePlacementManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2065189012
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065189011}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1673355328}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2065189013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065189011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c49260ea3ee8904a8904129714ab2b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RacePlacementManager
-  firstPlacePoint: {fileID: 508496032}
-  secondPlacePoint: {fileID: 1876017227}
-  thirdPlacePoint: {fileID: 43249039}
-  totalRacers: 4
-  podiumMoveDuration: 0.6
 --- !u!1 &2073341623
 GameObject:
   m_ObjectHideFlags: 0
@@ -32814,7 +32749,7 @@ MonoBehaviour:
   bridge2End: {fileID: 1478800157}
   bridge3Start: {fileID: 168390985}
   bridge3End: {fileID: 643601770}
-  finishTarget: {fileID: 704149399}
+  finishTarget: {fileID: 1204175672}
   bricksNeededForBridge: 20
   pointReachedDistance: 1.1
   navMeshSampleDistance: 2.5
@@ -32834,7 +32769,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &8807378013679780326
 NavMeshAgent:
   m_ObjectHideFlags: 0
