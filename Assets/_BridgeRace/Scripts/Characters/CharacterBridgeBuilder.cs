@@ -94,27 +94,100 @@ public class CharacterBridgeBuilder : MonoBehaviour
         );
 
 
-        if (Physics.Raycast(
+        // ==========================================
+        // ÖNEMLİ:
+        //
+        // Tek Raycast kullanmıyoruz.
+        //
+        // PhysicsRamp, Trigger veya başka Collider
+        // ray'in önüne girse bile bütün hitleri
+        // kontrol ediyoruz.
+        // ==========================================
+
+        RaycastHit[] hits =
+            Physics.RaycastAll(
                 rayOrigin.position,
                 Vector3.down,
-                out RaycastHit hit,
                 rayDistance,
                 ~0,
+                QueryTriggerInteraction.Collide
+            );
 
-                // ÖNEMLİ:
-                // BridgeStep'leri algılamak için
-                // Trigger collider'ları da kontrol ediyoruz.
-                QueryTriggerInteraction.Collide))
+
+        if (hits == null ||
+            hits.Length <= 0)
         {
-            if (hit.collider.TryGetComponent<IBuildable>(
+            return;
+        }
+
+
+        IBuildable closestBuildable =
+            null;
+
+
+        Vector3 closestHitPoint =
+            Vector3.zero;
+
+
+        float closestDistance =
+            Mathf.Infinity;
+
+
+        // ==========================================
+        // Sadece IBuildable olan collider'ları ara.
+        //
+        // PhysicsRamp_Final → geç
+        // ActivationZone    → geç
+        // Modifier Trigger  → geç
+        // BridgeStep        → kullan
+        // ==========================================
+
+        for (int i = 0;
+             i < hits.Length;
+             i++)
+        {
+            RaycastHit hit =
+                hits[i];
+
+
+            if (!hit.collider.TryGetComponent<IBuildable>(
                     out IBuildable buildable))
             {
-                CheckBuildable(
-                    buildable,
-                    hit.point
-                );
+                continue;
             }
+
+
+            if (hit.distance >=
+                closestDistance)
+            {
+                continue;
+            }
+
+
+            closestDistance =
+                hit.distance;
+
+
+            closestBuildable =
+                buildable;
+
+
+            closestHitPoint =
+                hit.point;
         }
+
+
+        // Altımızda IBuildable yok.
+        if (closestBuildable == null)
+        {
+            return;
+        }
+
+
+        CheckBuildable(
+            closestBuildable,
+            closestHitPoint
+        );
     }
 
 
@@ -133,8 +206,8 @@ public class CharacterBridgeBuilder : MonoBehaviour
             character.CharacterTeamColor;
 
 
-        // Step zaten bizim rengimizse
-        // rahatça yürü.
+        // Step zaten karakterin rengindeyse
+        // tekrar Brick harcama.
         if (!buildable.NeedsBuild(
                 characterColor))
         {
@@ -153,7 +226,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Brick harca.
+        // Bir Brick harca.
         bool brickSpent =
             characterStack.TrySpendBrick();
 
@@ -168,7 +241,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Step'i karakterin rengine boya/build et.
+        // Step'i karakterin rengine build et.
         buildable.BuildStep(
             characterColor
         );
@@ -183,7 +256,8 @@ public class CharacterBridgeBuilder : MonoBehaviour
             transform.position;
 
 
-        direction.y = 0f;
+        direction.y =
+            0f;
 
 
         if (direction.sqrMagnitude <

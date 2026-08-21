@@ -190,13 +190,25 @@ public class AIController : CharacterBase
     [Header("Bridge Recovery")]
 
     [SerializeField]
-    private float bridgeStallTime = 0.6f;
+    private float bridgeStallTime = 0.20f;
 
     [SerializeField]
     private float bridgeProgressThreshold = 0.015f;
 
     [SerializeField]
-    private float bridgeLookAhead = 2f;
+    private float bridgeLookAhead = 0.45f;
+
+    [SerializeField]
+    private float bridgeCenteringStrength = 3f;
+
+    [SerializeField]
+    private float bridgeCrossSpeed = 3.4f;
+
+    [SerializeField]
+    private float bridgeReturnSpeed = 2.5f;
+
+
+    private float groundMoveSpeed;
 
 
     // =====================================================
@@ -503,6 +515,11 @@ public class AIController : CharacterBase
 
                 break;
         }
+
+
+        // Ada üzerinde kullanılacak normal hız.
+        groundMoveSpeed =
+            moveSpeed;
 
 
         Debug.Log(
@@ -996,10 +1013,10 @@ public class AIController : CharacterBase
     // =====================================================
 
     private void CrossBridge(
-        Transform bridgeStart,
-        Transform bridgeEnd,
-        AIState nextState,
-        AIState returnState)
+     Transform bridgeStart,
+     Transform bridgeEnd,
+     AIState nextState,
+     AIState returnState)
     {
         if (bridgeStart == null ||
             bridgeEnd == null)
@@ -1021,12 +1038,6 @@ public class AIController : CharacterBase
         }
 
 
-        MoveAlongBridgeLane(
-            bridgeStart,
-            bridgeEnd
-        );
-
-
         float distance =
             HorizontalDistance(
                 transform.position,
@@ -1034,6 +1045,8 @@ public class AIController : CharacterBase
             );
 
 
+        // Önce köprünün gerçekten bitip
+        // bitmediğini kontrol ediyoruz.
         if (distance <=
             pointReachedDistance)
         {
@@ -1052,12 +1065,73 @@ public class AIController : CharacterBase
         }
 
 
+        // =================================================
+        // EN ÖNEMLİ DÜZELTME
+        //
+        // Brick bitti ve bir sonraki Step boşsa,
+        // 0.2 saniye daha ileri yürümek yerine
+        // ANINDA geri dönüşe geç.
+        // =================================================
+
+        if (characterStack != null &&
+            characterStack.BrickCount <= 0 &&
+            bridgeBuilder != null &&
+            bridgeBuilder.IsForwardBlocked)
+        {
+            BeginBridgeReturn(
+                returnState
+            );
+
+            return;
+        }
+
+
+        MoveAlongBridgeLane(
+            bridgeStart,
+            bridgeEnd
+        );
+
+
+        // Ek güvenlik.
         CheckBridgeStall(
             distance,
             returnState
         );
     }
 
+    private void BeginBridgeReturn(
+    AIState returnState)
+    {
+        // Hareket yönünü hemen sıfırla.
+        StopMovement();
+
+
+        // Önceki ileri momentumunu da temizle.
+        // Yoksa state değişse bile Rigidbody
+        // bir fizik frame'i ileri taşıyabiliyor.
+        if (rb != null)
+        {
+            Vector3 velocity =
+                rb.linearVelocity;
+
+
+            velocity.x = 0f;
+            velocity.z = 0f;
+
+
+            rb.linearVelocity =
+                velocity;
+
+
+            rb.angularVelocity =
+                Vector3.zero;
+        }
+
+
+        ChangeState(
+            returnState
+        );
+    }
 
     // =====================================================
     // BRIDGE RETURN
@@ -1125,8 +1199,8 @@ public class AIController : CharacterBase
     // =====================================================
 
     private void MoveAlongBridgeLane(
-        Transform from,
-        Transform to)
+    Transform from,
+    Transform to)
     {
         Vector3 start =
             from.position;
@@ -1137,7 +1211,6 @@ public class AIController : CharacterBase
 
 
         start.y = 0f;
-
         end.y = 0f;
 
 
@@ -1149,7 +1222,8 @@ public class AIController : CharacterBase
 
 
         Vector3 lane =
-            end - start;
+            end -
+            start;
 
 
         float laneLength =
@@ -1171,7 +1245,8 @@ public class AIController : CharacterBase
 
 
         Vector3 fromStart =
-            current - start;
+            current -
+            start;
 
 
         float progress =
@@ -1189,45 +1264,61 @@ public class AIController : CharacterBase
             );
 
 
-        float targetProgress =
-            Mathf.Min(
-                progress +
-                bridgeLookAhead,
-                laneLength
-            );
-
-
-        Vector3 laneTarget =
+        // Karakterin olması gereken
+        // merdiven merkez noktası.
+        Vector3 centerPoint =
             start +
             laneDirection *
-            targetProgress;
+            progress;
 
 
-        Vector3 direction =
-            laneTarget -
+        // Merkeze olan yatay sapma.
+        Vector3 centerCorrection =
+            centerPoint -
             current;
 
 
-        direction.y = 0f;
+        centerCorrection.y =
+            0f;
 
 
-        if (direction.sqrMagnitude <
+        // Biraz ileri hedef.
+        Vector3 forwardDirection =
+            laneDirection *
+            bridgeLookAhead;
+
+
+        // =================================================
+        // Düz ileri gitmek yerine:
+        //
+        // ileri yön
+        // +
+        // merdiven merkezine güçlü düzeltme
+        // =================================================
+
+        Vector3 finalDirection =
+            forwardDirection +
+            centerCorrection *
+            bridgeCenteringStrength;
+
+
+        finalDirection.y =
+            0f;
+
+
+        if (finalDirection.sqrMagnitude <
             0.001f)
         {
-            direction =
-                end -
-                current;
+            StopMovement();
+
+            return;
         }
 
 
-        direction.y = 0f;
-
-
         SetMoveDirection(
-            direction.normalized
+            finalDirection.normalized
         );
     }
-
 
     // =====================================================
     // BRIDGE STALL
@@ -1282,9 +1373,9 @@ public class AIController : CharacterBase
 
 
         if (bridgeStallTimer >=
-            bridgeStallTime)
+    bridgeStallTime)
         {
-            ChangeState(
+            BeginBridgeReturn(
                 returnState
             );
         }
@@ -1718,7 +1809,7 @@ public class AIController : CharacterBase
     // =====================================================
 
     private void ChangeState(
-        AIState newState)
+    AIState newState)
     {
         currentState =
             newState;
@@ -1744,6 +1835,15 @@ public class AIController : CharacterBase
             false;
 
 
+        bool crossing =
+            newState ==
+                AIState.CrossingBridge1 ||
+            newState ==
+                AIState.CrossingBridge2 ||
+            newState ==
+                AIState.CrossingBridge3;
+
+
         bool returning =
             newState ==
                 AIState.ReturningFromBridge1 ||
@@ -1751,6 +1851,24 @@ public class AIController : CharacterBase
                 AIState.ReturningFromBridge2 ||
             newState ==
                 AIState.ReturningFromBridge3;
+
+
+        // Köprüde daha yavaş ve güvenli hareket.
+        if (crossing)
+        {
+            moveSpeed =
+                bridgeCrossSpeed;
+        }
+        else if (returning)
+        {
+            moveSpeed =
+                bridgeReturnSpeed;
+        }
+        else
+        {
+            moveSpeed =
+                groundMoveSpeed;
+        }
 
 
         if (bridgeBuilder != null)
