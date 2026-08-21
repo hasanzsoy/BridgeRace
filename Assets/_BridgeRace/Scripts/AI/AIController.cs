@@ -245,6 +245,10 @@ public class AIController : CharacterBase
     private bool hasNavDestination;
 
 
+    [SerializeField]
+    private float bridgeReachedDistance = 0.15f;
+
+
     // =====================================================
     // AWAKE
     // =====================================================
@@ -1048,18 +1052,17 @@ public class AIController : CharacterBase
         // Önce köprünün gerçekten bitip
         // bitmediğini kontrol ediyoruz.
         if (distance <=
-            pointReachedDistance)
+    bridgeReachedDistance)
         {
             StopMovement();
 
+            ClearHorizontalVelocity();
 
-            SnapAgentToCurrentPosition();
-
+            ResetNavigation();
 
             ChangeState(
                 nextState
             );
-
 
             return;
         }
@@ -1169,12 +1172,13 @@ public class AIController : CharacterBase
 
 
         if (HorizontalDistance(
-                transform.position,
-                bridgeStart.position) <=
-            pointReachedDistance)
+        transform.position,
+        bridgeStart.position) <=
+    bridgeReachedDistance)
         {
             StopMovement();
 
+            ClearHorizontalVelocity();
 
             if (bridgeBuilder != null)
             {
@@ -1183,13 +1187,13 @@ public class AIController : CharacterBase
                 );
             }
 
-
-            SnapAgentToCurrentPosition();
-
+            ResetNavigation();
 
             ChangeState(
                 collectingState
             );
+
+            return;
         }
     }
 
@@ -1900,6 +1904,25 @@ public class AIController : CharacterBase
         SetMoveDirection(
             Vector3.zero
         );
+    }
+    private void ClearHorizontalVelocity()
+    {
+        if (rb == null)
+        {
+            return;
+        }
+
+        Vector3 velocity =
+            rb.linearVelocity;
+
+        velocity.x = 0f;
+        velocity.z = 0f;
+
+        rb.linearVelocity =
+            velocity;
+
+        rb.angularVelocity =
+            Vector3.zero;
     }
 
 
