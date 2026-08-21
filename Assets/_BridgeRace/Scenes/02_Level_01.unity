@@ -20058,7 +20058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_Material
@@ -20194,9 +20194,9 @@ MonoBehaviour:
   bridge1End: {fileID: 1628815967}
   bridge2Start: {fileID: 144034283}
   bridge2End: {fileID: 1652600283}
-  bridge3Start: {fileID: 1715978557}
-  bridge3End: {fileID: 1399205434}
-  finishTarget: {fileID: 1826825346}
+  bridge3Start: {fileID: 168390985}
+  bridge3End: {fileID: 643601770}
+  finishTarget: {fileID: 704149399}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
   navMeshSampleDistance: 2.5
@@ -23569,6 +23569,10 @@ PrefabInstance:
     - target: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_Name
       value: AI_Red
+      objectReference: {fileID: 0}
+    - target: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_Material
@@ -28143,7 +28147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1061837387178112921, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       propertyPath: m_Material
@@ -28277,11 +28281,11 @@ MonoBehaviour:
   middle02BrickArea: {fileID: 775491042}
   bridge1Start: {fileID: 1962304115}
   bridge1End: {fileID: 1554585409}
-  bridge2Start: {fileID: 2073341624}
-  bridge2End: {fileID: 164035345}
-  bridge3Start: {fileID: 1715978557}
-  bridge3End: {fileID: 1399205434}
-  finishTarget: {fileID: 1452778728}
+  bridge2Start: {fileID: 495141655}
+  bridge2End: {fileID: 557727157}
+  bridge3Start: {fileID: 168390985}
+  bridge3End: {fileID: 643601770}
+  finishTarget: {fileID: 704149399}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
   navMeshSampleDistance: 2.5
