@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class RacePlacementManager : MonoBehaviour
 {
@@ -9,34 +10,246 @@ public class RacePlacementManager : MonoBehaviour
     [SerializeField] private Transform secondPlacePoint;
     [SerializeField] private Transform thirdPlacePoint;
 
-
-    [Header("Race Settings")]
-    [SerializeField] private int totalRacers = 4;
-
+    [Header("Ranking Settings")]
+    [SerializeField] private Transform finishReference;
 
     [Header("Podium Animation")]
     [SerializeField] private float podiumMoveDuration = 0.6f;
 
-
-    private List<CharacterBase> finishedCharacters =
-        new List<CharacterBase>();
+    private bool raceResolved;
 
 
     private void OnEnable()
     {
-        EventManager.OnCharacterFinished +=
-            OnCharacterFinished;
+        EventManager.OnCharacterFinished += OnCharacterFinished;
     }
 
 
     private void OnDisable()
     {
-        EventManager.OnCharacterFinished -=
-            OnCharacterFinished;
+        EventManager.OnCharacterFinished -= OnCharacterFinished;
     }
 
 
-    private void OnCharacterFinished(
+    private void OnCharacterFinished(CharacterBase winner)
+    {
+        if (winner == null)
+        {
+            return;
+        }
+
+        // Yarış bir kere sonuçlandırılır.
+        if (raceResolved)
+        {
+            return;
+        }
+
+        raceResolved = true;
+
+        Debug.Log(
+            winner.gameObject.name +
+            " yarışı ilk bitirdi!"
+        );
+
+
+        // Sahnede bulunan bütün aktif yarışçıları al.
+        CharacterBase[] foundRacers =
+            FindObjectsByType<CharacterBase>(
+                FindObjectsSortMode.None
+            );
+
+
+        List<CharacterBase> remainingRacers =
+            new List<CharacterBase>();
+
+
+        for (int i = 0; i < foundRacers.Length; i++)
+        {
+            CharacterBase racer =
+                foundRacers[i];
+
+            if (racer == null)
+            {
+                continue;
+            }
+
+            // Winner zaten kesin 1.
+            if (racer == winner)
+            {
+                continue;
+            }
+
+            remainingRacers.Add(racer);
+        }
+
+
+        // =========================================
+        // Kalanları Brick sayılarına göre sırala.
+        // Fazla Brick = daha iyi sıra.
+        // =========================================
+
+        remainingRacers.Sort(
+            CompareRemainingRacers
+        );
+
+
+        List<CharacterBase> finalOrder =
+            new List<CharacterBase>();
+
+
+        // İlk bitiren kesin birinci.
+        finalOrder.Add(winner);
+
+
+        // Geri kalanlar Brick sayısına göre.
+        finalOrder.AddRange(
+            remainingRacers
+        );
+
+
+        // Yarış bittiği anda herkes durur.
+        for (int i = 0;
+             i < finalOrder.Count;
+             i++)
+        {
+            FreezeCharacter(
+                finalOrder[i]
+            );
+        }
+
+
+        // =========================================
+        // Sıralamayı uygula.
+        // =========================================
+
+        for (int i = 0;
+             i < finalOrder.Count;
+             i++)
+        {
+            CharacterBase racer =
+                finalOrder[i];
+
+            int place = i + 1;
+
+
+            if (place <= 3)
+            {
+                Transform placePoint =
+                    GetPlacePoint(place);
+
+
+                if (placePoint != null)
+                {
+                    SendCharacterToPodium(
+                        racer,
+                        placePoint
+                    );
+                }
+                else
+                {
+                    Debug.LogError(
+                        place +
+                        ". sıra için Place Point atanmadı!"
+                    );
+                }
+            }
+
+
+            // AI ve diğer sistemlere
+            // sonucunu bildir.
+            EventManager.CharacterPlaced(
+                racer,
+                place
+            );
+
+
+            Debug.Log(
+                racer.gameObject.name +
+                " → " +
+                place +
+                ". sıra | Brick: " +
+                GetBrickCount(racer)
+            );
+        }
+
+
+        // Artık diğerlerinin finish'e
+        // gelmesini beklemiyoruz.
+        EventManager.RaceFinished();
+    }
+
+
+    private int CompareRemainingRacers(
+        CharacterBase a,
+        CharacterBase b)
+    {
+        int aBrick =
+            GetBrickCount(a);
+
+        int bBrick =
+            GetBrickCount(b);
+
+
+        // Büyük Brick sayısı önce gelsin.
+        int brickComparison =
+            bBrick.CompareTo(aBrick);
+
+
+        if (brickComparison != 0)
+        {
+            return brickComparison;
+        }
+
+
+        // Brick sayıları eşitse,
+        // Finish'e daha yakın olan öne geçsin.
+        if (finishReference != null)
+        {
+            float aDistance =
+                (
+                    a.transform.position -
+                    finishReference.position
+                ).sqrMagnitude;
+
+
+            float bDistance =
+                (
+                    b.transform.position -
+                    finishReference.position
+                ).sqrMagnitude;
+
+
+            return aDistance.CompareTo(
+                bDistance
+            );
+        }
+
+
+        return 0;
+    }
+
+
+    private int GetBrickCount(
+        CharacterBase character)
+    {
+        if (character == null)
+        {
+            return 0;
+        }
+
+
+        if (character.TryGetComponent<CharacterStack>(
+                out CharacterStack stack))
+        {
+            return stack.BrickCount;
+        }
+
+
+        return 0;
+    }
+
+
+    private void FreezeCharacter(
         CharacterBase character)
     {
         if (character == null)
@@ -45,95 +258,52 @@ public class RacePlacementManager : MonoBehaviour
         }
 
 
-        // Aynı karakter ikinci kez
-        // sıralamaya giremez.
-        if (finishedCharacters.Contains(
-                character))
-        {
-            return;
-        }
-
-
-        finishedCharacters.Add(
-            character
+        // CharacterBase hareketini durdur.
+        character.SetMovementEnabled(
+            false
         );
 
 
-        int place =
-            finishedCharacters.Count;
+        // Eski Tween varsa temizle.
+        character.transform.DOKill();
 
 
-        Debug.Log(
-            character.gameObject.name +
-            " FINISH'e ulaştı. Sıra: " +
-            place
-        );
-
-
-        // ==========================================
-        // İlk 3 karakter podiuma gider.
-        // ==========================================
-
-        if (place <= 3)
+        // AI ise NavMesh hareketini de durdur.
+        if (character.TryGetComponent<NavMeshAgent>(
+                out NavMeshAgent agent))
         {
-            Transform placePoint =
-                GetPlacePoint(place);
-
-
-            if (placePoint != null)
+            if (agent.enabled &&
+                agent.isOnNavMesh)
             {
-                SendCharacterToPodium(
-                    character,
-                    placePoint
-                );
+                agent.ResetPath();
             }
-            else
-            {
-                Debug.LogError(
-                    place +
-                    ". sıra için Place Point atanmadı!"
-                );
 
-
-                StopCharacterAtFinish(
-                    character
-                );
-            }
-        }
-
-        // ==========================================
-        // 4. karakter podiuma çıkmaz.
-        // ==========================================
-
-        else
-        {
-            StopCharacterAtFinish(
-                character
-            );
+            agent.enabled = false;
         }
 
 
-        // AIController / UI gibi sistemlere
-        // karakterin sırasını bildir.
-        EventManager.CharacterPlaced(
-            character,
-            place
-        );
-
-
-        Debug.Log(
-            character.gameObject.name +
-            " yarışı " +
-            place +
-            ". sırada bitirdi."
-        );
-
-
-        // Bütün yarışçılar bitirdi.
-        if (finishedCharacters.Count >=
-            totalRacers)
+        // Rigidbody tamamen dursun.
+        if (character.TryGetComponent<Rigidbody>(
+                out Rigidbody rb))
         {
-            EventManager.RaceFinished();
+            rb.linearVelocity =
+                Vector3.zero;
+
+            rb.angularVelocity =
+                Vector3.zero;
+
+            rb.isKinematic =
+                true;
+        }
+
+
+        // Yarış bittikten sonra
+        // karakterler birbirini itmesin.
+        if (character.TryGetComponent<Collider>(
+                out Collider characterCollider))
+        {
+            characterCollider.enabled =
+                false;
         }
     }
 
@@ -142,47 +312,6 @@ public class RacePlacementManager : MonoBehaviour
         CharacterBase character,
         Transform placePoint)
     {
-        // Artık normal hareket etmesin.
-        character.SetMovementEnabled(
-            false
-        );
-
-
-        // Eski tween varsa temizle.
-        character.transform.DOKill();
-
-
-        // Fizik sistemini durdur.
-        if (character.TryGetComponent<Rigidbody>(
-                out Rigidbody rb))
-        {
-            rb.linearVelocity =
-                Vector3.zero;
-
-
-            rb.angularVelocity =
-                Vector3.zero;
-
-
-            rb.isKinematic =
-                true;
-        }
-
-
-        // Podium üzerinde karakterlerin
-        // birbirini itmesini engelle.
-        if (character.TryGetComponent<Collider>(
-                out Collider characterCollider))
-        {
-            characterCollider.enabled =
-                false;
-        }
-
-
-        // ==========================================
-        // Podium hareketi
-        // ==========================================
-
         character.transform.DOMove(
                 placePoint.position,
                 podiumMoveDuration
@@ -192,7 +321,8 @@ public class RacePlacementManager : MonoBehaviour
             );
 
 
-        character.transform.DORotateQuaternion(
+        character.transform
+            .DORotateQuaternion(
                 placePoint.rotation,
                 podiumMoveDuration
             )
@@ -209,36 +339,6 @@ public class RacePlacementManager : MonoBehaviour
     }
 
 
-    private void StopCharacterAtFinish(
-        CharacterBase character)
-    {
-        character.SetMovementEnabled(
-            false
-        );
-
-
-        character.transform.DOKill();
-
-
-        if (character.TryGetComponent<Rigidbody>(
-                out Rigidbody rb))
-        {
-            rb.linearVelocity =
-                Vector3.zero;
-
-
-            rb.angularVelocity =
-                Vector3.zero;
-        }
-
-
-        Debug.Log(
-            character.gameObject.name +
-            " 4. oldu. Podiuma çıkmayacak."
-        );
-    }
-
-
     private Transform GetPlacePoint(
         int place)
     {
@@ -247,10 +347,8 @@ public class RacePlacementManager : MonoBehaviour
             case 1:
                 return firstPlacePoint;
 
-
             case 2:
                 return secondPlacePoint;
-
 
             case 3:
                 return thirdPlacePoint;
