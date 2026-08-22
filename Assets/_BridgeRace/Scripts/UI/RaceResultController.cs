@@ -6,47 +6,41 @@ using UnityEngine.SceneManagement;
 public class RaceResultController : MonoBehaviour
 {
     [Header("Camera")]
-    [SerializeField]
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private CameraFollow cameraFollow;
+    [SerializeField] private Transform podiumCameraPoint;
+    [SerializeField] private float cameraMoveDuration = 0.8f;
 
-    [SerializeField]
-    private CameraFollow cameraFollow;
-
-    [SerializeField]
-    private Transform podiumCameraPoint;
-
-    [SerializeField]
-    private float cameraMoveDuration = 0.8f;
 
     [Header("Confetti")]
-    [SerializeField]
-    private ParticleSystem winnerConfetti;
+    [SerializeField] private ParticleSystem winnerConfetti;
+
 
     [Header("UI")]
-    [SerializeField]
-    private GameObject victoryPanel;
+    [SerializeField] private GameObject victoryPanel;
+    [SerializeField] private GameObject joystickRoot;
 
-    [SerializeField]
-    private GameObject joystickRoot;
+
+    [Header("Level")]
+    [SerializeField] private LevelManager levelManager;
+
 
     [Header("Timing")]
-    [SerializeField]
-    private float confettiDelay = 0.5f;
+    [SerializeField] private float confettiDelay = 0.5f;
+    [SerializeField] private float victoryDelay = 0.5f;
 
-    [SerializeField]
-    private float victoryDelay = 0.5f;
 
     private bool resultShown;
+    private bool loadingNextLevel;
+
 
     private void Awake()
     {
-        
         if (victoryPanel != null)
         {
-            victoryPanel.SetActive(
-                false
-            );
+            victoryPanel.SetActive(false);
         }
+
 
         if (winnerConfetti != null)
         {
@@ -58,17 +52,20 @@ public class RaceResultController : MonoBehaviour
         }
     }
 
+
     private void OnEnable()
     {
         EventManager.OnRaceFinished +=
             OnRaceFinished;
     }
 
+
     private void OnDisable()
     {
         EventManager.OnRaceFinished -=
             OnRaceFinished;
     }
+
 
     private void OnRaceFinished()
     {
@@ -86,23 +83,24 @@ public class RaceResultController : MonoBehaviour
         );
     }
 
+
     private IEnumerator ShowRaceResult()
     {
-       
+        // Joystick kapanır.
         if (joystickRoot != null)
         {
-            joystickRoot.SetActive(
-                false
-            );
+            joystickRoot.SetActive(false);
         }
 
+
+        // Oyuncu takip kamerası kapanır.
         if (cameraFollow != null)
         {
-            cameraFollow.SetFollowEnabled(
-                false
-            );
+            cameraFollow.SetFollowEnabled(false);
         }
 
+
+        // Kamera podiuma gider.
         if (mainCamera != null &&
             podiumCameraPoint != null)
         {
@@ -113,9 +111,7 @@ public class RaceResultController : MonoBehaviour
                     podiumCameraPoint.position,
                     cameraMoveDuration
                 )
-                .SetEase(
-                    Ease.InOutQuad
-                );
+                .SetEase(Ease.InOutQuad);
 
 
             mainCamera.transform
@@ -123,35 +119,72 @@ public class RaceResultController : MonoBehaviour
                     podiumCameraPoint.rotation,
                     cameraMoveDuration
                 )
-                .SetEase(
-                    Ease.InOutQuad
-                );
+                .SetEase(Ease.InOutQuad);
         }
 
+
+        // Karakterlerin podiuma
+        // yerleşmesini bekle.
         yield return new WaitForSeconds(
             confettiDelay
         );
 
+
+        // Konfeti.
         if (winnerConfetti != null)
         {
             winnerConfetti.Play();
         }
+
+
         yield return new WaitForSeconds(
             victoryDelay
         );
 
+
+        // Victory ekranı.
         if (victoryPanel != null)
         {
-            victoryPanel.SetActive(
-                true
-            );
+            victoryPanel.SetActive(true);
         }
     }
 
+
     public void ContinueToNextLevel()
     {
+        // Butona hızlıca iki kere basılırsa
+        // Level iki defa artmasın.
+        if (loadingNextLevel)
+        {
+            return;
+        }
+
+
+        loadingNextLevel = true;
+
+
+        // ======================================
+        // LEVEL NUMARASINI ARTIR VE KAYDET
+        // ======================================
+
+        if (levelManager != null)
+        {
+            levelManager.CompleteLevel();
+        }
+        else
+        {
+            Debug.LogError(
+                "RaceResultController üzerinde " +
+                "LevelManager atanmadı!"
+            );
+        }
+
+
         Time.timeScale = 1f;
 
+
+        // Şimdilik sadece bir bölümümüz var.
+        // Aynı sahneyi tekrar açıyoruz.
         Scene currentScene =
             SceneManager.GetActiveScene();
 
