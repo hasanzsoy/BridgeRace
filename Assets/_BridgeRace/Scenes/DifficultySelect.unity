@@ -1073,6 +1073,7 @@ GameObject:
   - component: {fileID: 1178935008}
   - component: {fileID: 1178935007}
   - component: {fileID: 1178935006}
+  - component: {fileID: 1178935009}
   m_Layer: 5
   m_Name: 'NormalButton '
   m_TagString: Untagged
@@ -1194,6 +1195,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178935004}
   m_CullTransparentMesh: 1
+--- !u!114 &1178935009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178935004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2671668ac2048024fa79bf297b5eabb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonPressAnimation
+  pressedScale: 0.92
+  pressDuration: 0.08
+  releaseDuration: 0.15
 --- !u!1 &1717492876
 GameObject:
   m_ObjectHideFlags: 0
@@ -1387,6 +1403,7 @@ GameObject:
   - component: {fileID: 1902067927}
   - component: {fileID: 1902067926}
   - component: {fileID: 1902067925}
+  - component: {fileID: 1902067928}
   m_Layer: 5
   m_Name: EasyButton
   m_TagString: Untagged
@@ -1508,6 +1525,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1902067923}
   m_CullTransparentMesh: 1
+--- !u!114 &1902067928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902067923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2671668ac2048024fa79bf297b5eabb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonPressAnimation
+  pressedScale: 0.92
+  pressDuration: 0.08
+  releaseDuration: 0.15
 --- !u!1 &2007358190
 GameObject:
   m_ObjectHideFlags: 0
@@ -1520,6 +1552,7 @@ GameObject:
   - component: {fileID: 2007358194}
   - component: {fileID: 2007358193}
   - component: {fileID: 2007358192}
+  - component: {fileID: 2007358195}
   m_Layer: 5
   m_Name: HardButton
   m_TagString: Untagged
@@ -1641,6 +1674,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2007358190}
   m_CullTransparentMesh: 1
+--- !u!114 &2007358195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2007358190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2671668ac2048024fa79bf297b5eabb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonPressAnimation
+  pressedScale: 0.92
+  pressDuration: 0.08
+  releaseDuration: 0.15
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
