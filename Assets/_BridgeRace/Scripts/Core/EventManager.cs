@@ -41,6 +41,18 @@ public static class EventManager
     // Combo tamamlandığında
     public static event Action<int>
         OnComboCompleted;
+    // Canlı yarış sıralaması
+    public static event Action<CharacterBase[]>
+        OnLiveRankingChanged;
+
+    // Toplam Gold değiştiğinde
+    public static event Action<int>
+        OnGoldChanged;
+
+
+    // Yarıştan Gold kazanıldığında
+    public static event Action<int>
+        OnGoldRewardEarned;
 
 
     public static void BrickCollected(
@@ -52,6 +64,7 @@ public static class EventManager
             stackCount
         );
     }
+
 
 
     public static void BrickSpent(
@@ -132,6 +145,31 @@ public static class EventManager
     {
         OnComboCompleted?.Invoke(
             bonusBrickAmount
+        );
+    }
+
+    public static void LiveRankingChanged(
+    CharacterBase[] ranking)
+    {
+        OnLiveRankingChanged?.Invoke(
+            ranking
+        );
+    }
+
+    public static void GoldChanged(
+    int totalGold)
+    {
+        OnGoldChanged?.Invoke(
+            totalGold
+        );
+    }
+
+
+    public static void GoldRewardEarned(
+        int reward)
+    {
+        OnGoldRewardEarned?.Invoke(
+            reward
         );
     }
 }
