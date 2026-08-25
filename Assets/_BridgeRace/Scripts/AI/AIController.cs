@@ -42,6 +42,7 @@ public class AIController : CharacterBase
 
     private CharacterBridgeBuilder bridgeBuilder;
     private AIBrickTargeting brickTargeting;
+    private AINavigation navigation;
 
 
     // =====================================================
@@ -240,12 +241,6 @@ public class AIController : CharacterBase
 
     private float bridgeStallTimer;
 
-
-    private Vector3 lastNavDestination;
-
-    private bool hasNavDestination;
-
-
     [SerializeField]
     private float bridgeReachedDistance = 0.15f;
 
@@ -279,6 +274,14 @@ public class AIController : CharacterBase
         brickTargeting =
             new AIBrickTargeting();
 
+        navigation =
+    new AINavigation(
+        transform,
+        navMeshAgent,
+        navMeshSampleDistance,
+        SetMoveDirection,
+        StopMovement
+    );
 
         difficulty =
             GameSettings.SelectedDifficulty;
@@ -286,7 +289,6 @@ public class AIController : CharacterBase
 
         ApplyDifficulty();
 
-        SetupNavMeshAgent();
     }
 
 
@@ -528,6 +530,12 @@ public class AIController : CharacterBase
         groundMoveSpeed =
             moveSpeed;
 
+        if (navigation != null)
+        {
+            navigation.SetSpeed(
+                moveSpeed
+            );
+        }
 
         Debug.Log(
             gameObject.name +
@@ -1184,133 +1192,10 @@ public class AIController : CharacterBase
     // NAVMESH
     // =====================================================
 
-    private void SetupNavMeshAgent()
-    {
-        if (navMeshAgent == null)
-        {
-            return;
-        }
-
-
-        navMeshAgent.updatePosition =
-            false;
-
-
-        navMeshAgent.updateRotation =
-            false;
-
-
-        navMeshAgent.speed =
-            moveSpeed;
-
-
-        navMeshAgent.angularSpeed =
-            720f;
-
-
-        navMeshAgent.acceleration =
-            20f;
-
-
-        navMeshAgent.stoppingDistance =
-            0.2f;
-    }
-
-
     private void MoveUsingNavMesh(
-        Vector3 targetPosition)
+    Vector3 targetPosition)
     {
-        if (navMeshAgent == null)
-        {
-            MoveDirectly(
-                targetPosition
-            );
-
-            return;
-        }
-
-
-        if (!EnsureAgentOnNavMesh())
-        {
-            MoveDirectly(
-                targetPosition
-            );
-
-            return;
-        }
-
-
-        Vector3 sync =
-            transform.position;
-
-
-        sync.y =
-            navMeshAgent.nextPosition.y;
-
-
-        navMeshAgent.nextPosition =
-            sync;
-
-
-        Vector3 destination =
-            targetPosition;
-
-
-        if (NavMesh.SamplePosition(
-                targetPosition,
-                out NavMeshHit hit,
-                navMeshSampleDistance,
-                NavMesh.AllAreas))
-        {
-            destination =
-                hit.position;
-        }
-
-
-        bool changed =
-            !hasNavDestination ||
-            (
-                destination -
-                lastNavDestination
-            ).sqrMagnitude >
-            0.04f;
-
-
-        if (changed)
-        {
-            navMeshAgent.isStopped =
-                false;
-
-
-            navMeshAgent.SetDestination(
-                destination
-            );
-
-
-            lastNavDestination =
-                destination;
-
-
-            hasNavDestination =
-                true;
-        }
-
-
-        if (navMeshAgent.pathPending)
-        {
-            return;
-        }
-
-
-        Vector3 direction =
-            navMeshAgent.desiredVelocity;
-
-
-        direction.y = 0f;
-
-
-        if (direction.sqrMagnitude <
-            0.001f)
+        if (navigation == null)
         {
             StopMovement();
 
@@ -1318,123 +1203,44 @@ public class AIController : CharacterBase
         }
 
 
-        SetMoveDirection(
-            direction.normalized
+        navigation.MoveTo(
+            targetPosition
         );
     }
-
-
-    private void MoveDirectly(
-        Vector3 target)
-    {
-        Vector3 direction =
-            target -
-            transform.position;
-
-
-        direction.y = 0f;
-
-
-        if (direction.sqrMagnitude <
-            0.001f)
-        {
-            StopMovement();
-
-            return;
-        }
-
-
-        SetMoveDirection(
-            direction.normalized
-        );
-    }
-
 
     private bool EnsureAgentOnNavMesh()
     {
-        if (navMeshAgent == null ||
-            !navMeshAgent.enabled)
+        if (navigation == null)
         {
             return false;
         }
 
 
-        if (navMeshAgent.isOnNavMesh)
-        {
-            return true;
-        }
-
-
-        return SnapAgentToCurrentPosition();
+        return navigation.EnsureAgentOnNavMesh();
     }
 
 
     private bool SnapAgentToCurrentPosition()
     {
-        if (navMeshAgent == null ||
-            !navMeshAgent.enabled)
+        if (navigation == null)
         {
             return false;
         }
 
 
-        if (!NavMesh.SamplePosition(
-                transform.position,
-                out NavMeshHit hit,
-                navMeshSampleDistance,
-                NavMesh.AllAreas))
-        {
-            return false;
-        }
-
-
-        bool warped =
-            navMeshAgent.Warp(
-                hit.position
-            );
-
-
-        if (!warped)
-        {
-            return false;
-        }
-
-
-        navMeshAgent.updatePosition =
-            false;
-
-
-        navMeshAgent.updateRotation =
-            false;
-
-
-        hasNavDestination =
-            false;
-
-
-        return true;
+        return navigation.SnapToCurrentPosition();
     }
 
 
     private void ResetNavigation()
     {
-        hasNavDestination =
-            false;
-
-
-        if (navMeshAgent == null ||
-            !navMeshAgent.enabled ||
-            !navMeshAgent.isOnNavMesh)
+        if (navigation == null)
         {
             return;
         }
 
 
-        navMeshAgent.ResetPath();
-
-
-        navMeshAgent.isStopped =
-            true;
+        navigation.Reset();
     }
 
 
@@ -1609,8 +1415,10 @@ public class AIController : CharacterBase
             Mathf.Infinity;
 
 
-        hasNavDestination =
-            false;
+        if (navigation != null)
+        {
+            navigation.Reset();
+        }
 
 
         bool crossing =
