@@ -41,6 +41,7 @@ public class AIController : CharacterBase
 
 
     private CharacterBridgeBuilder bridgeBuilder;
+    private AIBrickTargeting brickTargeting;
 
 
     // =====================================================
@@ -264,7 +265,6 @@ public class AIController : CharacterBase
                 GetComponent<CharacterStack>();
         }
 
-
         if (navMeshAgent == null)
         {
             navMeshAgent =
@@ -276,12 +276,15 @@ public class AIController : CharacterBase
             GetComponent<CharacterBridgeBuilder>();
 
 
+        brickTargeting =
+            new AIBrickTargeting();
+
+
         difficulty =
             GameSettings.SelectedDifficulty;
 
 
         ApplyDifficulty();
-
 
         SetupNavMeshAgent();
     }
@@ -684,268 +687,39 @@ public class AIController : CharacterBase
     // =====================================================
 
     private Brick FindBrickTarget(
-        BoxCollider brickArea)
+    BoxCollider brickArea)
     {
-        List<Brick> bricks =
-            GetValidBricks(
-                brickArea
-            );
-
-
-        if (bricks.Count == 0)
+        if (brickTargeting == null)
         {
             return null;
         }
 
 
-        switch (difficulty)
-        {
-            case AIDifficulty.Easy:
-
-                return bricks[
-                    Random.Range(
-                        0,
-                        bricks.Count
-                    )
-                ];
-
-
-            case AIDifficulty.Normal:
-
-                return FindNearestBrick(
-                    bricks
-                );
-
-
-            case AIDifficulty.Hard:
-
-                return FindClusterBrick(
-                    bricks
-                );
-        }
-
-
-        return null;
-    }
-
-
-    private List<Brick> GetValidBricks(
-        BoxCollider brickArea)
-    {
-        List<Brick> result =
-            new List<Brick>();
-
-
-        if (brickArea == null)
-        {
-            return result;
-        }
-
-
-        Brick[] bricks =
-            FindObjectsByType<Brick>(
-                FindObjectsSortMode.None
-            );
-
-
-        foreach (Brick brick in bricks)
-        {
-            if (brick == null)
-            {
-                continue;
-            }
-
-
-            if (!brick.CanBeCollected)
-            {
-                continue;
-            }
-
-
-            if (brick.CollectableColor !=
-                CharacterTeamColor)
-            {
-                continue;
-            }
-
-
-            if (!IsInsideArea(
-                    brickArea,
-                    brick.transform.position))
-            {
-                continue;
-            }
-
-
-            result.Add(
-                brick
-            );
-        }
-
-
-        return result;
-    }
-
-
-    private Brick FindNearestBrick(
-        List<Brick> bricks)
-    {
-        Brick nearest =
-            null;
-
-
-        float bestDistance =
-            Mathf.Infinity;
-
-
-        foreach (Brick brick in bricks)
-        {
-            float distance =
-                HorizontalDistanceSquared(
-                    transform.position,
-                    brick.transform.position
-                );
-
-
-            if (distance <
-                bestDistance)
-            {
-                bestDistance =
-                    distance;
-
-
-                nearest =
-                    brick;
-            }
-        }
-
-
-        return nearest;
-    }
-
-
-    private Brick FindClusterBrick(
-        List<Brick> bricks)
-    {
-        Brick best =
-            null;
-
-
-        float bestScore =
-            Mathf.NegativeInfinity;
-
-
-        float radiusSquared =
-            hardClusterRadius *
-            hardClusterRadius;
-
-
-        foreach (Brick candidate in bricks)
-        {
-            int nearbyCount = 0;
-
-
-            foreach (Brick other in bricks)
-            {
-                if (other == candidate)
-                {
-                    continue;
-                }
-
-
-                Vector3 difference =
-                    other.transform.position -
-                    candidate.transform.position;
-
-
-                difference.y = 0f;
-
-
-                if (difference.sqrMagnitude <=
-                    radiusSquared)
-                {
-                    nearbyCount++;
-                }
-            }
-
-
-            float distance =
-                HorizontalDistanceSquared(
-                    transform.position,
-                    candidate.transform.position
-                );
-
-
-            float score =
-                nearbyCount * 10f -
-                distance * 0.1f;
-
-
-            if (score >
-                bestScore)
-            {
-                bestScore =
-                    score;
-
-                best =
-                    candidate;
-            }
-        }
-
-
-        return best;
-    }
-
-
-    private bool IsTargetBrickValid(
-        Brick brick,
-        BoxCollider area)
-    {
-        if (brick == null)
-        {
-            return false;
-        }
-
-
-        if (!brick.CanBeCollected)
-        {
-            return false;
-        }
-
-
-        if (brick.CollectableColor !=
-            CharacterTeamColor)
-        {
-            return false;
-        }
-
-
-        return IsInsideArea(
-            area,
-            brick.transform.position
+        return brickTargeting.FindTarget(
+            brickArea,
+            CharacterTeamColor,
+            difficulty,
+            transform.position,
+            hardClusterRadius
         );
     }
 
 
-    private bool IsInsideArea(
-        BoxCollider area,
-        Vector3 position)
+    private bool IsTargetBrickValid(
+    Brick brick,
+    BoxCollider area)
     {
-        if (area == null)
+        if (brickTargeting == null)
         {
             return false;
         }
 
 
-        Bounds bounds =
-            area.bounds;
-
-
-        return
-            position.x >= bounds.min.x &&
-            position.x <= bounds.max.x &&
-            position.z >= bounds.min.z &&
-            position.z <= bounds.max.z;
+        return brickTargeting.IsTargetValid(
+            brick,
+            area,
+            CharacterTeamColor
+        );
     }
 
 
