@@ -45,6 +45,7 @@ public class AIController : CharacterBase
     private AINavigation navigation;
 
     private AIBridgeTraversal bridgeTraversal;
+    private IAIDifficultyStrategy difficultyStrategy;
 
     // =====================================================
     // BRICK AREAS
@@ -296,7 +297,11 @@ public class AIController : CharacterBase
             GameSettings.SelectedDifficulty;
 
 
+        CreateDifficultyStrategy();
+
         ApplyDifficulty();
+
+        navigation.Setup(moveSpeed);
 
     }
 
@@ -499,45 +504,28 @@ public class AIController : CharacterBase
 
     private void ApplyDifficulty()
     {
-        switch (difficulty)
+        if (difficultyStrategy == null)
         {
-            case AIDifficulty.Easy:
+            Debug.LogError(
+                gameObject.name +
+                " için Difficulty Strategy oluşturulamadı!"
+            );
 
-                moveSpeed =
-                    easyMoveSpeed;
-
-                brickSearchInterval =
-                    easySearchInterval;
-
-                break;
-
-
-            case AIDifficulty.Normal:
-
-                moveSpeed =
-                    normalMoveSpeed;
-
-                brickSearchInterval =
-                    normalSearchInterval;
-
-                break;
-
-
-            case AIDifficulty.Hard:
-
-                moveSpeed =
-                    hardMoveSpeed;
-
-                brickSearchInterval =
-                    hardSearchInterval;
-
-                break;
+            return;
         }
 
 
-        // Ada üzerinde kullanılacak normal hız.
+        moveSpeed =
+            difficultyStrategy.MoveSpeed;
+
+
+        brickSearchInterval =
+            difficultyStrategy.SearchInterval;
+
+
         groundMoveSpeed =
             moveSpeed;
+
 
         if (navigation != null)
         {
@@ -546,46 +534,31 @@ public class AIController : CharacterBase
             );
         }
 
+
         Debug.Log(
             gameObject.name +
             " | Difficulty: " +
             difficulty +
             " | Speed: " +
-            moveSpeed
+            moveSpeed +
+            " | Search Mode: " +
+            difficultyStrategy.SearchMode
         );
     }
 
-
     private void PrepareCollectionGoal()
     {
-        switch (difficulty)
+        if (difficultyStrategy == null)
         {
-            case AIDifficulty.Easy:
+            currentBrickGoal =
+                bricksNeededForBridge;
 
-                currentBrickGoal =
-                    Random.Range(
-                        easyMinBricks,
-                        easyMaxBricks + 1
-                    );
-
-                break;
-
-
-            case AIDifficulty.Normal:
-
-                currentBrickGoal =
-                    normalBrickGoal;
-
-                break;
-
-
-            case AIDifficulty.Hard:
-
-                currentBrickGoal =
-                    bricksNeededForBridge;
-
-                break;
+            return;
         }
+
+
+        currentBrickGoal =
+            difficultyStrategy.GetBrickGoal();
 
 
         Debug.Log(
@@ -595,6 +568,47 @@ public class AIController : CharacterBase
         );
     }
 
+    private void CreateDifficultyStrategy()
+    {
+        switch (difficulty)
+        {
+            case AIDifficulty.Easy:
+
+                difficultyStrategy =
+                    new EasyDifficultyStrategy(
+                        easyMoveSpeed,
+                        easySearchInterval,
+                        easyMinBricks,
+                        easyMaxBricks
+                    );
+
+                break;
+
+
+            case AIDifficulty.Normal:
+
+                difficultyStrategy =
+                    new NormalDifficultyStrategy(
+                        normalMoveSpeed,
+                        normalSearchInterval,
+                        normalBrickGoal
+                    );
+
+                break;
+
+
+            case AIDifficulty.Hard:
+
+                difficultyStrategy =
+                    new HardDifficultyStrategy(
+                        hardMoveSpeed,
+                        hardSearchInterval,
+                        bricksNeededForBridge
+                    );
+
+                break;
+        }
+    }
 
     // =====================================================
     // COLLECT
@@ -706,7 +720,8 @@ public class AIController : CharacterBase
     private Brick FindBrickTarget(
     BoxCollider brickArea)
     {
-        if (brickTargeting == null)
+        if (brickTargeting == null ||
+            difficultyStrategy == null)
         {
             return null;
         }
@@ -715,12 +730,11 @@ public class AIController : CharacterBase
         return brickTargeting.FindTarget(
             brickArea,
             CharacterTeamColor,
-            difficulty,
+            difficultyStrategy.SearchMode,
             transform.position,
             hardClusterRadius
         );
     }
-
 
     private bool IsTargetBrickValid(
     Brick brick,

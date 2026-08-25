@@ -6,7 +6,7 @@ public class AIBrickTargeting
     public Brick FindTarget(
         BoxCollider brickArea,
         TeamColor teamColor,
-        AIDifficulty difficulty,
+        AIBrickSearchMode searchMode,
         Vector3 aiPosition,
         float hardClusterRadius)
     {
@@ -21,16 +21,16 @@ public class AIBrickTargeting
             return null;
         }
 
-        switch (difficulty)
+        switch (searchMode)
         {
-            case AIDifficulty.Easy:
+            case AIBrickSearchMode.Random:
 
                 return FindRandomBrick(
                     validBricks
                 );
 
 
-            case AIDifficulty.Normal:
+            case AIBrickSearchMode.Nearest:
 
                 return FindNearestBrick(
                     validBricks,
@@ -38,7 +38,7 @@ public class AIBrickTargeting
                 );
 
 
-            case AIDifficulty.Hard:
+            case AIBrickSearchMode.Cluster:
 
                 return FindClusterBrick(
                     validBricks,
