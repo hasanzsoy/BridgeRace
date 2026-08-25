@@ -54,6 +54,10 @@ public static class EventManager
     public static event Action<int>
         OnGoldRewardEarned;
 
+    // Victory ekranındaki Gold ödülü hesaplandığında
+    public static event Action<int, int, int>
+        OnVictoryGoldReward;
+
 
     public static void BrickCollected(
         CharacterBase character,
@@ -170,6 +174,18 @@ public static class EventManager
     {
         OnGoldRewardEarned?.Invoke(
             reward
+        );
+    }
+
+    public static void VictoryGoldReward(
+    int oldGold,
+    int rewardGold,
+    int newTotalGold)
+    {
+        OnVictoryGoldReward?.Invoke(
+            oldGold,
+            rewardGold,
+            newTotalGold
         );
     }
 }
