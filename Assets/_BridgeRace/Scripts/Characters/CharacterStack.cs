@@ -404,7 +404,104 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             );
         }
     }
+    public void AddBonusBricks(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
 
+        if (brickPoolManager == null)
+        {
+            return;
+        }
+
+        if (ownerCharacter == null)
+        {
+            return;
+        }
+
+        TeamColor characterColor =
+            ownerCharacter.CharacterTeamColor;
+
+        for (int i = 0; i < amount; i++)
+        {
+            Brick newBrick =
+                brickPoolManager.GetBrickFromPool(
+                    characterColor
+                );
+
+            if (newBrick == null)
+            {
+                break;
+            }
+
+            newBrick.transform.position =
+                transform.position +
+                Vector3.up * 0.5f;
+
+            newBrick.transform.rotation =
+                Quaternion.identity;
+
+            AddBonusBrick(
+                newBrick
+            );
+        }
+    }
+
+    private void AddBonusBrick(Brick brick)
+    {
+        if (brick == null)
+        {
+            return;
+        }
+
+        if (stackPoint == null)
+        {
+            return;
+        }
+
+        if (brick.TryGetComponent<Collider>(
+                out Collider brickCollider))
+        {
+            brickCollider.enabled =
+                false;
+        }
+
+        int brickIndex =
+            collectedBricks.Count;
+
+        collectedBricks.Add(
+            brick
+        );
+
+        Vector3 targetLocalPosition =
+            new Vector3(
+                0f,
+                brickIndex * verticalSpacing,
+                0f
+            );
+
+        brick.transform.DOKill();
+
+        brick.transform.SetParent(
+            stackPoint,
+            true
+        );
+
+        brick.transform.DOLocalJump(
+            targetLocalPosition,
+            jumpPower,
+            1,
+            collectDuration
+        )
+        .SetEase(Ease.OutQuad);
+
+        brick.transform.DOLocalRotate(
+            Vector3.zero,
+            collectDuration
+        );
+    }
 
     // ==========================================
     // -5 / -10 MODIFIER GATE
