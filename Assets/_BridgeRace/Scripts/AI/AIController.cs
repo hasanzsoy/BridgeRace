@@ -44,6 +44,7 @@ public class AIController : CharacterBase
     private AIBrickTargeting brickTargeting;
     private AINavigation navigation;
 
+    private AIBridgeTraversal bridgeTraversal;
 
     // =====================================================
     // BRICK AREAS
@@ -234,13 +235,6 @@ public class AIController : CharacterBase
 
     private float brickSearchInterval;
 
-
-    private float lastBridgeDistance =
-        Mathf.Infinity;
-
-
-    private float bridgeStallTimer;
-
     [SerializeField]
     private float bridgeReachedDistance = 0.15f;
 
@@ -281,6 +275,21 @@ public class AIController : CharacterBase
         navMeshSampleDistance,
         SetMoveDirection,
         StopMovement
+    );
+
+        bridgeTraversal =
+    new AIBridgeTraversal(
+        transform,
+        characterStack,
+        bridgeBuilder,
+        rb,
+        SetMoveDirection,
+        StopMovement,
+        pointReachedDistance,
+        bridgeProgressThreshold,
+        bridgeStallTime,
+        bridgeLookAhead,
+        bridgeCenteringStrength
     );
 
         difficulty =
@@ -799,13 +808,12 @@ public class AIController : CharacterBase
     // =====================================================
 
     private void CrossBridge(
-     Transform bridgeStart,
-     Transform bridgeEnd,
-     AIState nextState,
-     AIState returnState)
+    Transform bridgeStart,
+    Transform bridgeEnd,
+    AIState nextState,
+    AIState returnState)
     {
-        if (bridgeStart == null ||
-            bridgeEnd == null)
+        if (bridgeTraversal == null)
         {
             StopMovement();
 
@@ -816,106 +824,35 @@ public class AIController : CharacterBase
         ResetNavigation();
 
 
-        if (bridgeBuilder != null)
-        {
-            bridgeBuilder.SetBridgeCheckEnabled(
-                true
-            );
-        }
-
-
-        float distance =
-            HorizontalDistance(
-                transform.position,
-                bridgeEnd.position
+        AIBridgeTraversal.CrossResult result =
+            bridgeTraversal.Cross(
+                bridgeStart,
+                bridgeEnd,
+                Time.deltaTime
             );
 
 
-        // Önce köprünün gerçekten bitip
-        // bitmediğini kontrol ediyoruz.
-        if (distance <=
-    bridgeReachedDistance)
+        switch (result)
         {
-            StopMovement();
+            case AIBridgeTraversal.CrossResult.ReachedEnd:
 
-            ClearHorizontalVelocity();
+                SnapAgentToCurrentPosition();
 
-            ResetNavigation();
+                ChangeState(
+                    nextState
+                );
 
-            ChangeState(
-                nextState
-            );
+                break;
 
-            return;
+
+            case AIBridgeTraversal.CrossResult.NeedsReturn:
+
+                ChangeState(
+                    returnState
+                );
+
+                break;
         }
-
-
-        // =================================================
-        // EN ÖNEMLİ DÜZELTME
-        //
-        // Brick bitti ve bir sonraki Step boşsa,
-        // 0.2 saniye daha ileri yürümek yerine
-        // ANINDA geri dönüşe geç.
-        // =================================================
-
-        if (characterStack != null &&
-            characterStack.BrickCount <= 0 &&
-            bridgeBuilder != null &&
-            bridgeBuilder.IsForwardBlocked)
-        {
-            BeginBridgeReturn(
-                returnState
-            );
-
-            return;
-        }
-
-
-        MoveAlongBridgeLane(
-            bridgeStart,
-            bridgeEnd
-        );
-
-
-        // Ek güvenlik.
-        CheckBridgeStall(
-            distance,
-            returnState
-        );
-    }
-
-    private void BeginBridgeReturn(
-    AIState returnState)
-    {
-        // Hareket yönünü hemen sıfırla.
-        StopMovement();
-
-
-        // Önceki ileri momentumunu da temizle.
-        // Yoksa state değişse bile Rigidbody
-        // bir fizik frame'i ileri taşıyabiliyor.
-        if (rb != null)
-        {
-            Vector3 velocity =
-                rb.linearVelocity;
-
-
-            velocity.x = 0f;
-            velocity.z = 0f;
-
-
-            rb.linearVelocity =
-                velocity;
-
-
-            rb.angularVelocity =
-                Vector3.zero;
-        }
-
-
-        ChangeState(
-            returnState
-        );
     }
 
     // =====================================================
@@ -923,13 +860,14 @@ public class AIController : CharacterBase
     // =====================================================
 
     private void ReturnAcrossBridge(
-        Transform bridgeEnd,
-        Transform bridgeStart,
-        AIState collectingState)
+    Transform bridgeEnd,
+    Transform bridgeStart,
+    AIState collectingState)
     {
-        if (bridgeStart == null ||
-            bridgeEnd == null)
+        if (bridgeTraversal == null)
         {
+            StopMovement();
+
             return;
         }
 
@@ -937,236 +875,26 @@ public class AIController : CharacterBase
         ResetNavigation();
 
 
-        // Geri dönerken bridge builder artık
-        // hareketimizi engellemesin.
-        if (bridgeBuilder != null)
-        {
-            bridgeBuilder.SetBridgeCheckEnabled(
-                false
-            );
-        }
-
-
-        MoveAlongBridgeLane(
-            bridgeEnd,
-            bridgeStart
-        );
-
-
-        if (HorizontalDistance(
-        transform.position,
-        bridgeStart.position) <=
-    bridgeReachedDistance)
-        {
-            StopMovement();
-
-            ClearHorizontalVelocity();
-
-            if (bridgeBuilder != null)
-            {
-                bridgeBuilder.SetBridgeCheckEnabled(
-                    true
-                );
-            }
-
-            ResetNavigation();
-
-            ChangeState(
-                collectingState
+        bool reachedStart =
+            bridgeTraversal.ReturnAcross(
+                bridgeEnd,
+                bridgeStart
             );
 
-            return;
-        }
-    }
 
-
-    // =====================================================
-    // BRIDGE LANE FOLLOW
-    // =====================================================
-
-    private void MoveAlongBridgeLane(
-    Transform from,
-    Transform to)
-    {
-        Vector3 start =
-            from.position;
-
-
-        Vector3 end =
-            to.position;
-
-
-        start.y = 0f;
-        end.y = 0f;
-
-
-        Vector3 current =
-            transform.position;
-
-
-        current.y = 0f;
-
-
-        Vector3 lane =
-            end -
-            start;
-
-
-        float laneLength =
-            lane.magnitude;
-
-
-        if (laneLength <
-            0.01f)
+        if (!reachedStart)
         {
-            StopMovement();
-
             return;
         }
 
 
-        Vector3 laneDirection =
-            lane /
-            laneLength;
+        SnapAgentToCurrentPosition();
 
 
-        Vector3 fromStart =
-            current -
-            start;
-
-
-        float progress =
-            Vector3.Dot(
-                fromStart,
-                laneDirection
-            );
-
-
-        progress =
-            Mathf.Clamp(
-                progress,
-                0f,
-                laneLength
-            );
-
-
-        // Karakterin olması gereken
-        // merdiven merkez noktası.
-        Vector3 centerPoint =
-            start +
-            laneDirection *
-            progress;
-
-
-        // Merkeze olan yatay sapma.
-        Vector3 centerCorrection =
-            centerPoint -
-            current;
-
-
-        centerCorrection.y =
-            0f;
-
-
-        // Biraz ileri hedef.
-        Vector3 forwardDirection =
-            laneDirection *
-            bridgeLookAhead;
-
-
-        // =================================================
-        // Düz ileri gitmek yerine:
-        //
-        // ileri yön
-        // +
-        // merdiven merkezine güçlü düzeltme
-        // =================================================
-
-        Vector3 finalDirection =
-            forwardDirection +
-            centerCorrection *
-            bridgeCenteringStrength;
-
-
-        finalDirection.y =
-            0f;
-
-
-        if (finalDirection.sqrMagnitude <
-            0.001f)
-        {
-            StopMovement();
-
-            return;
-        }
-
-
-        SetMoveDirection(
-            finalDirection.normalized
+        ChangeState(
+            collectingState
         );
     }
-
-    // =====================================================
-    // BRIDGE STALL
-    // =====================================================
-
-    private void CheckBridgeStall(
-        float distance,
-        AIState returnState)
-    {
-        if (characterStack == null)
-        {
-            return;
-        }
-
-
-        if (float.IsInfinity(
-                lastBridgeDistance))
-        {
-            lastBridgeDistance =
-                distance;
-
-            return;
-        }
-
-
-        float progress =
-            lastBridgeDistance -
-            distance;
-
-
-        if (progress >
-            bridgeProgressThreshold)
-        {
-            bridgeStallTimer =
-                0f;
-        }
-        else if (
-            characterStack.BrickCount <= 0)
-        {
-            bridgeStallTimer +=
-                Time.deltaTime;
-        }
-        else
-        {
-            bridgeStallTimer =
-                0f;
-        }
-
-
-        lastBridgeDistance =
-            distance;
-
-
-        if (bridgeStallTimer >=
-    bridgeStallTime)
-        {
-            BeginBridgeReturn(
-                returnState
-            );
-        }
-    }
-
 
     // =====================================================
     // FINISH
@@ -1406,14 +1134,10 @@ public class AIController : CharacterBase
         nextBrickSearchTime =
             0f;
 
-
-        bridgeStallTimer =
-            0f;
-
-
-        lastBridgeDistance =
-            Mathf.Infinity;
-
+        if (bridgeTraversal != null)
+        {
+            bridgeTraversal.ResetProgress();
+        }
 
         if (navigation != null)
         {
