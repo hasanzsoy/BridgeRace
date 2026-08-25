@@ -34,6 +34,14 @@ public static class EventManager
     public static event Action
         OnRaceFinished;
 
+    // Combo değeri değiştiğinde
+    public static event Action<int, int>
+        OnComboChanged;
+
+    // Combo tamamlandığında
+    public static event Action<int>
+        OnComboCompleted;
+
 
     public static void BrickCollected(
         CharacterBase character,
@@ -106,5 +114,24 @@ public static class EventManager
     public static void RaceFinished()
     {
         OnRaceFinished?.Invoke();
+    }
+
+    public static void ComboChanged(
+    int currentCombo,
+    int requiredCombo)
+    {
+        OnComboChanged?.Invoke(
+            currentCombo,
+            requiredCombo
+        );
+    }
+
+
+    public static void ComboCompleted(
+        int bonusBrickAmount)
+    {
+        OnComboCompleted?.Invoke(
+            bonusBrickAmount
+        );
     }
 }

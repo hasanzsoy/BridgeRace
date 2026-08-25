@@ -56,6 +56,15 @@ public class BrickComboSystem : MonoBehaviour
     }
 
 
+    private void Start()
+    {
+        EventManager.ComboChanged(
+            currentCombo,
+            requiredCombo
+        );
+    }
+
+
     private void OnEnable()
     {
         EventManager.OnBrickCollected +=
@@ -78,7 +87,7 @@ public class BrickComboSystem : MonoBehaviour
 
     private void OnBrickCollected(
         CharacterBase character,
-        int amount)
+        int stackCount)
     {
         if (character != player)
         {
@@ -86,8 +95,16 @@ public class BrickComboSystem : MonoBehaviour
         }
 
 
-        currentCombo +=
-            amount;
+        // Event'teki ikinci değer toplam StackCount.
+        // Bu nedenle onu Combo'ya eklemiyoruz.
+        // Her gerçek BrickCollected event'i = +1 Combo.
+        currentCombo++;
+
+
+        EventManager.ComboChanged(
+            currentCombo,
+            requiredCombo
+        );
 
 
         Debug.Log(
@@ -109,8 +126,7 @@ public class BrickComboSystem : MonoBehaviour
     private void OnCharacterKnockback(
         CharacterBase knockedCharacter)
     {
-        if (knockedCharacter !=
-            player)
+        if (knockedCharacter != player)
         {
             return;
         }
@@ -127,12 +143,26 @@ public class BrickComboSystem : MonoBehaviour
             return;
         }
 
+
         currentCombo =
             0;
+
 
         characterStack.AddBonusBricks(
             bonusBrickAmount
         );
+
+
+        EventManager.ComboCompleted(
+            bonusBrickAmount
+        );
+
+
+        EventManager.ComboChanged(
+            currentCombo,
+            requiredCombo
+        );
+
 
         Debug.Log(
             "COMBO TAMAMLANDI! +" +
@@ -146,6 +176,12 @@ public class BrickComboSystem : MonoBehaviour
     {
         currentCombo =
             0;
+
+
+        EventManager.ComboChanged(
+            currentCombo,
+            requiredCombo
+        );
 
 
         Debug.Log(
