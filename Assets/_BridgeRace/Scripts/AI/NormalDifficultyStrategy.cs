@@ -49,6 +49,13 @@ public class NormalDifficultyStrategy :
             brickGoal;
     }
 
+    public AIOpponentMode OpponentMode
+    {
+        get
+        {
+            return AIOpponentMode.Neutral;
+        }
+    }
 
     public int GetBrickGoal()
     {

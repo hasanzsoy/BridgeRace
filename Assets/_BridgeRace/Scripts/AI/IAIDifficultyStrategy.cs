@@ -5,18 +5,20 @@ public interface IAIDifficultyStrategy
         get;
     }
 
-
     float SearchInterval
     {
         get;
     }
-
 
     AIBrickSearchMode SearchMode
     {
         get;
     }
 
+    AIOpponentMode OpponentMode
+    {
+        get;
+    }
 
     int GetBrickGoal();
 }

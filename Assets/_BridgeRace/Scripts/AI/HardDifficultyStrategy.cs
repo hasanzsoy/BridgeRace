@@ -49,6 +49,13 @@ public class HardDifficultyStrategy :
             bricksNeededForBridge;
     }
 
+    public AIOpponentMode OpponentMode
+    {
+        get
+        {
+            return AIOpponentMode.Aggressive;
+        }
+    }
 
     public int GetBrickGoal()
     {

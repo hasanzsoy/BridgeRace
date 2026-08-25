@@ -36,6 +36,13 @@ public class EasyDifficultyStrategy :
         }
     }
 
+    public AIOpponentMode OpponentMode
+    {
+        get
+        {
+            return AIOpponentMode.Avoid;
+        }
+    }
 
     public EasyDifficultyStrategy(
         float moveSpeed,

@@ -42,10 +42,14 @@ public class AIController : CharacterBase
 
     private CharacterBridgeBuilder bridgeBuilder;
     private AIBrickTargeting brickTargeting;
+
     private AINavigation navigation;
 
     private AIBridgeTraversal bridgeTraversal;
+
     private IAIDifficultyStrategy difficultyStrategy;
+
+    private AIOpponentBehaviour opponentBehaviour;
 
     // =====================================================
     // BRICK AREAS
@@ -124,6 +128,20 @@ public class AIController : CharacterBase
 
     [SerializeField]
     private float pointReachedDistance = 0.8f;
+
+    [Header("Opponent Behaviour")]
+
+    [SerializeField]
+    private float easyAvoidanceRadius = 2.5f;
+
+    [SerializeField]
+    private float easyAvoidanceStrength = 2f;
+
+    [SerializeField]
+    private float hardAttackRadius = 5f;
+
+    [SerializeField]
+    private int hardBrickAdvantage = 3;
 
 
     // =====================================================
@@ -291,6 +309,16 @@ public class AIController : CharacterBase
         bridgeStallTime,
         bridgeLookAhead,
         bridgeCenteringStrength
+    );
+
+        opponentBehaviour =
+    new AIOpponentBehaviour(
+        this,
+        characterStack,
+        easyAvoidanceRadius,
+        easyAvoidanceStrength,
+        hardAttackRadius,
+        hardBrickAdvantage
     );
 
         difficulty =
@@ -664,14 +692,6 @@ public class AIController : CharacterBase
             }
         }
 
-
-        // =================================================
-        // ÇOK ÖNEMLİ:
-        // Brick henüz spawn olmadıysa artık DONMUYOR.
-        // Brick alanının merkezine ilerliyor.
-        // Böylece ActivationZone'u tetikliyor.
-        // =================================================
-
         if (targetBrick == null)
         {
             MoveToBrickAreaCenter(
@@ -682,8 +702,23 @@ public class AIController : CharacterBase
         }
 
 
+        Vector3 movementTarget =
+     targetBrick.transform.position;
+
+
+        if (opponentBehaviour != null &&
+            difficultyStrategy != null)
+        {
+            movementTarget =
+                opponentBehaviour.GetMovementTarget(
+                    movementTarget,
+                    difficultyStrategy.OpponentMode
+                );
+        }
+
+
         MoveUsingNavMesh(
-            targetBrick.transform.position
+            movementTarget
         );
     }
 
