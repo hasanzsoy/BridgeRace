@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public abstract class CharacterBase :MonoBehaviour,IRacer
+public abstract class CharacterBase : MonoBehaviour, IRacer
 {
     [Header("Character Settings")]
     [SerializeField] private TeamColor teamColor = TeamColor.Blue;
@@ -12,21 +12,23 @@ public abstract class CharacterBase :MonoBehaviour,IRacer
 
     protected Rigidbody rb;
 
+    // ÖNEMLİ:
+    // AIController da bu referansı kullanacağı için
+    // private değil protected.
+    protected CharacterBridgeBuilder bridgeBuilder;
+
     private Vector3 moveDirection;
-
     private bool movementEnabled = true;
-
-    private CharacterBridgeBuilder bridgeBuilder;
 
 
     public TeamColor CharacterTeamColor => teamColor;
     public TeamColor RacerColor => teamColor;
 
 
-
     protected virtual void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        rb =
+            GetComponent<Rigidbody>();
 
         bridgeBuilder =
             GetComponent<CharacterBridgeBuilder>();

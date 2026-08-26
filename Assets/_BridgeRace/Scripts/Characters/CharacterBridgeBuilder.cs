@@ -94,16 +94,8 @@ public class CharacterBridgeBuilder : MonoBehaviour
         );
 
 
-        // ==========================================
-        // ÖNEMLİ:
-        //
-        // Tek Raycast kullanmıyoruz.
-        //
-        // PhysicsRamp, Trigger veya başka Collider
-        // ray'in önüne girse bile bütün hitleri
-        // kontrol ediyoruz.
-        // ==========================================
-
+        // PhysicsRamp / Trigger gibi başka Collider'lar
+        // araya girse bile bütün hitleri kontrol ediyoruz.
         RaycastHit[] hits =
             Physics.RaycastAll(
                 rayOrigin.position,
@@ -133,15 +125,7 @@ public class CharacterBridgeBuilder : MonoBehaviour
             Mathf.Infinity;
 
 
-        // ==========================================
         // Sadece IBuildable olan collider'ları ara.
-        //
-        // PhysicsRamp_Final → geç
-        // ActivationZone    → geç
-        // Modifier Trigger  → geç
-        // BridgeStep        → kullan
-        // ==========================================
-
         for (int i = 0;
              i < hits.Length;
              i++)
@@ -177,7 +161,6 @@ public class CharacterBridgeBuilder : MonoBehaviour
         }
 
 
-        // Altımızda IBuildable yok.
         if (closestBuildable == null)
         {
             return;

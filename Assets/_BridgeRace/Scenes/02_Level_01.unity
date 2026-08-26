@@ -6710,7 +6710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &378391902
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25304,7 +25304,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &1225986551
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -25776,7 +25775,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1263173311
 RectTransform:
   m_ObjectHideFlags: 0
@@ -34851,7 +34850,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &1845009217
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -39842,7 +39840,6 @@ MonoBehaviour:
   bridgeCenteringStrength: 3
   bridgeCrossSpeed: 3.4
   bridgeReturnSpeed: 2.5
-  bridgeReachedDistance: 0.15
 --- !u!195 &8807378013679780326
 NavMeshAgent:
   m_ObjectHideFlags: 0
