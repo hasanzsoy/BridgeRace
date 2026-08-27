@@ -51,6 +51,8 @@ public class GameAudioManager : MonoBehaviour
         audioSource.PlayOneShot(
             brickCollectClip
         );
+
+        
     }
 
 
