@@ -4,6 +4,7 @@ using UnityEngine;
 public class LiveLeaderboardUI : MonoBehaviour
 {
     [Header("Ranking Texts")]
+
     [SerializeField]
     private TMP_Text firstPlaceText;
 
@@ -18,6 +19,7 @@ public class LiveLeaderboardUI : MonoBehaviour
 
 
     [Header("AI Names")]
+
     [SerializeField]
     private string redName = "LIAM";
 
@@ -27,6 +29,10 @@ public class LiveLeaderboardUI : MonoBehaviour
     [SerializeField]
     private string yellowName = "NOAH";
 
+
+    // =====================================================
+    // EVENTS
+    // =====================================================
 
     private void OnEnable()
     {
@@ -42,6 +48,10 @@ public class LiveLeaderboardUI : MonoBehaviour
     }
 
 
+    // =====================================================
+    // LEADERBOARD
+    // =====================================================
+
     private void UpdateLeaderboard(
         CharacterBase[] ranking)
     {
@@ -55,7 +65,6 @@ public class LiveLeaderboardUI : MonoBehaviour
         {
             SetRow(
                 firstPlaceText,
-                1,
                 ranking[0]
             );
         }
@@ -65,7 +74,6 @@ public class LiveLeaderboardUI : MonoBehaviour
         {
             SetRow(
                 secondPlaceText,
-                2,
                 ranking[1]
             );
         }
@@ -75,7 +83,6 @@ public class LiveLeaderboardUI : MonoBehaviour
         {
             SetRow(
                 thirdPlaceText,
-                3,
                 ranking[2]
             );
         }
@@ -85,16 +92,18 @@ public class LiveLeaderboardUI : MonoBehaviour
         {
             SetRow(
                 fourthPlaceText,
-                4,
                 ranking[3]
             );
         }
     }
 
 
+    // =====================================================
+    // ROW
+    // =====================================================
+
     private void SetRow(
         TMP_Text text,
-        int place,
         CharacterBase character)
     {
         if (text == null ||
@@ -110,40 +119,16 @@ public class LiveLeaderboardUI : MonoBehaviour
             );
 
 
-        int brickCount =
-            GetBrickCount(
-                character
-            );
-
-
+        // Sadece karakter ismini gösteriyoruz.
+        // Brick sayısı ve sıra numarası gösterilmiyor.
         text.text =
-            place +
-            ". " +
-            characterName +
-            "     " +
-            brickCount;
+            characterName;
     }
 
 
-    private int GetBrickCount(
-        CharacterBase character)
-    {
-        if (character == null)
-        {
-            return 0;
-        }
-
-
-        if (character.TryGetComponent<CharacterStack>(
-                out CharacterStack stack))
-        {
-            return stack.BrickCount;
-        }
-
-
-        return 0;
-    }
-
+    // =====================================================
+    // CHARACTER NAME
+    // =====================================================
 
     private string GetCharacterName(
         CharacterBase character)
