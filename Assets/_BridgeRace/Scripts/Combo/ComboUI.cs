@@ -4,27 +4,59 @@ using UnityEngine;
 
 public class ComboUI : MonoBehaviour
 {
+    // =====================================================
+    // UI REFERENCES
+    // =====================================================
+
     [Header("UI References")]
-    [SerializeField] private TMP_Text comboText;
-    [SerializeField] private TMP_Text comboRewardText;
+
+    [SerializeField]
+    private TMP_Text comboText;
+
+    [SerializeField]
+    private GameObject comboRewardRoot;
+
+    [SerializeField]
+    private TMP_Text comboRewardText;
+
+
+    // =====================================================
+    // ANIMATION SETTINGS
+    // =====================================================
 
     [Header("Animation Settings")]
-    [SerializeField] private float punchScale = 0.18f;
-    [SerializeField] private float punchDuration = 0.20f;
 
-    [SerializeField] private float rewardShowDuration = 0.8f;
+    [SerializeField]
+    private float punchScale = 0.18f;
 
+    [SerializeField]
+    private float punchDuration = 0.20f;
+
+    [SerializeField]
+    private float rewardShowDuration = 0.8f;
+
+
+    // =====================================================
+    // AWAKE
+    // =====================================================
 
     private void Awake()
     {
-        if (comboRewardText != null)
-        {
-            comboRewardText.gameObject.SetActive(
-                false
-            );
-        }
+        // Oyun başlarken ödül paneli görünmesin.
+        //
+        // Böylece:
+        // - zemin
+        // - COMBO! +2 yazısı
+        //
+        // birlikte gizlenmiş olur.
+
+        HideComboReward();
     }
 
+
+    // =====================================================
+    // EVENTS
+    // =====================================================
 
     private void OnEnable()
     {
@@ -43,8 +75,27 @@ public class ComboUI : MonoBehaviour
 
         EventManager.OnComboCompleted -=
             ShowComboReward;
+
+
+        // Script kapanırken yarım kalan
+        // tweenleri temizle.
+
+        if (comboText != null)
+        {
+            comboText.transform.DOKill();
+        }
+
+
+        if (comboRewardRoot != null)
+        {
+            comboRewardRoot.transform.DOKill();
+        }
     }
 
+
+    // =====================================================
+    // NORMAL COMBO TEXT
+    // =====================================================
 
     private void UpdateComboText(
         int currentCombo,
@@ -63,13 +114,17 @@ public class ComboUI : MonoBehaviour
             requiredCombo;
 
 
+        // Önce eski animation varsa durdur.
         comboText.transform.DOKill();
 
 
+        // Scale'i sıfırla.
         comboText.transform.localScale =
             Vector3.one;
 
 
+        // Her brick alındığında
+        // ufak punch animation.
         comboText.transform.DOPunchScale(
             Vector3.one * punchScale,
             punchDuration,
@@ -79,38 +134,62 @@ public class ComboUI : MonoBehaviour
     }
 
 
+    // =====================================================
+    // COMBO REWARD
+    // =====================================================
+
     private void ShowComboReward(
         int bonusBrickAmount)
     {
-        if (comboRewardText == null)
+        if (comboRewardRoot == null ||
+            comboRewardText == null)
         {
             return;
         }
 
 
-        comboRewardText.gameObject.SetActive(
-            true
-        );
+        // Önce eski tween varsa temizle.
+        comboRewardRoot.transform.DOKill();
 
 
+        // Yazıyı güncelle.
         comboRewardText.text =
             "COMBO! +" +
             bonusBrickAmount;
 
 
-        comboRewardText.transform.DOKill();
+        // =================================================
+        // ÖDÜLÜ AÇ
+        //
+        // Burada artık sadece yazıyı değil,
+        // bütün ComboRewardRoot'u açıyoruz.
+        //
+        // Yani:
+        // ZEMİN + YAZI
+        // birlikte açılacak.
+        // =================================================
+
+        comboRewardRoot.SetActive(
+            true
+        );
 
 
-        comboRewardText.transform.localScale =
+        // Animation başlangıcında görünmez boyut.
+        comboRewardRoot.transform.localScale =
             Vector3.zero;
 
+
+        // =================================================
+        // DOTWEEN SEQUENCE
+        // =================================================
 
         Sequence sequence =
             DOTween.Sequence();
 
 
+        // İlk açılış.
         sequence.Append(
-            comboRewardText.transform
+            comboRewardRoot.transform
                 .DOScale(
                     1.25f,
                     0.20f
@@ -121,8 +200,9 @@ public class ComboUI : MonoBehaviour
         );
 
 
+        // Hafif küçülerek normal boyuta gelsin.
         sequence.Append(
-            comboRewardText.transform
+            comboRewardRoot.transform
                 .DOScale(
                     1f,
                     0.10f
@@ -130,13 +210,15 @@ public class ComboUI : MonoBehaviour
         );
 
 
+        // Bir süre ekranda kalsın.
         sequence.AppendInterval(
             rewardShowDuration
         );
 
 
+        // Kapanış.
         sequence.Append(
-            comboRewardText.transform
+            comboRewardRoot.transform
                 .DOScale(
                     0f,
                     0.20f
@@ -147,12 +229,35 @@ public class ComboUI : MonoBehaviour
         );
 
 
+        // Animation bitince
+        // bütün Root'u kapat.
         sequence.OnComplete(
-            () =>
-            {
-                comboRewardText.gameObject
-                    .SetActive(false);
-            }
+            HideComboReward
+        );
+    }
+
+
+    // =====================================================
+    // HIDE REWARD
+    // =====================================================
+
+    private void HideComboReward()
+    {
+        if (comboRewardRoot == null)
+        {
+            return;
+        }
+
+
+        comboRewardRoot.transform.DOKill();
+
+
+        comboRewardRoot.transform.localScale =
+            Vector3.one;
+
+
+        comboRewardRoot.SetActive(
+            false
         );
     }
 }
