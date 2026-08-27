@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: particle_lava
-  m_Shader: {fileID: 4800000, guid: d8dc5b44f974a407888d976711c36e82, type: 3}
-  m_Parent: {fileID: 2100000, guid: dde54578ed9eb504c9e183dc4919dee3, type: 2}
+  m_Shader: {fileID: 4800000, guid: 78e07f48e7f2b4e6fa63e61935d13bd7, type: 3}
+  m_Parent: {fileID: 2100000, guid: b118efc55ee544f74a0b16f5f934a168, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
