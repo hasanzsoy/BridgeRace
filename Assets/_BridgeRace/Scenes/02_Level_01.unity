@@ -726,7 +726,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: 7
-  oneUsePerCharacter: 1
 --- !u!65 &40340518
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1044,7 +1043,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: -5
-  oneUsePerCharacter: 1
 --- !u!65 &64806421
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9501,7 +9499,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: 7
-  oneUsePerCharacter: 1
 --- !u!65 &503619286
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10814,7 +10811,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: -10
-  oneUsePerCharacter: 1
 --- !u!65 &578196196
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -22255,7 +22251,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: -10
-  oneUsePerCharacter: 1
 --- !u!65 &1079124639
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -28054,7 +28049,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: 7
-  oneUsePerCharacter: 1
 --- !u!65 &1353701971
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -39658,7 +39652,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickModifierGate
   brickAmount: -5
-  oneUsePerCharacter: 1
 --- !u!65 &2120505088
 BoxCollider:
   m_ObjectHideFlags: 0

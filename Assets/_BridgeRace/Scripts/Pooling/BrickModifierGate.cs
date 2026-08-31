@@ -1,31 +1,59 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BrickModifierGate : MonoBehaviour
 {
+    // =====================================================
+    // MODIFIER
+    // =====================================================
+
     [Header("Modifier")]
-    [SerializeField] private int brickAmount;
-
-    [Header("Gate Settings")]
-    [SerializeField] private bool oneUsePerCharacter = true;
+    [SerializeField]
+    private int brickAmount;
 
 
-    private HashSet<IBrickModifierTarget>
-        usedCharacters =
-            new HashSet<IBrickModifierTarget>();
+    // =====================================================
+    // RUNTIME
+    // =====================================================
 
+    private bool isUsed;
+
+
+    // =====================================================
+    // ENABLE
+    // =====================================================
 
     private void OnEnable()
     {
-        usedCharacters.Clear();
+        // Sahne yeniden başladığında
+        // Gate tekrar kullanılabilir olsun.
+
+        isUsed = false;
     }
 
+
+    // =====================================================
+    // TRIGGER
+    // =====================================================
 
     private void OnTriggerEnter(
         Collider other)
     {
-        // Tag / Layer kontrolü yok.
-        // Interface üzerinden algılıyoruz.
+        // Gate daha önce kullanıldıysa
+        // hiçbir şey yapma.
+
+        if (isUsed)
+        {
+            return;
+        }
+
+
+        // =================================================
+        // TAG / LAYER KULLANMIYORUZ
+        //
+        // Sadece IBrickModifierTarget olan
+        // karakterleri kabul ediyoruz.
+        // =================================================
+
         if (!other.TryGetComponent<IBrickModifierTarget>(
                 out IBrickModifierTarget target))
         {
@@ -33,17 +61,22 @@ public class BrickModifierGate : MonoBehaviour
         }
 
 
-        // Aynı karakter aynı Gate'i daha önce
-        // kullandıysa tekrar çalışmasın.
-        if (oneUsePerCharacter &&
-            usedCharacters.Contains(target))
-        {
-            return;
-        }
+        // =================================================
+        // GATE ARTIK KULLANILDI
+        //
+        // Bunu efektten ÖNCE true yapıyoruz.
+        // Böylece aynı anda ikinci karakter girerse
+        // tekrar çalışmaz.
+        // =================================================
+
+        isUsed = true;
 
 
-        // Pozitif değer:
-        // +7 gibi Brick ekler.
+        // =================================================
+        // POZİTİF GATE
+        // Örnek: +7
+        // =================================================
+
         if (brickAmount > 0)
         {
             target.AddBricks(
@@ -52,30 +85,50 @@ public class BrickModifierGate : MonoBehaviour
         }
 
 
-        // Negatif değer:
-        // -5 / -10 gibi Brick azaltır.
+        // =================================================
+        // NEGATİF GATE
+        // Örnek: -5 / -10
+        // =================================================
+
         else if (brickAmount < 0)
         {
             target.RemoveBricks(
-                Mathf.Abs(brickAmount)
+                Mathf.Abs(
+                    brickAmount
+                )
             );
         }
 
 
-        if (oneUsePerCharacter)
-        {
-            usedCharacters.Add(
-                target
-            );
-        }
-
+        // =================================================
+        // DEBUG
+        // =================================================
 
         Debug.Log(
             other.gameObject.name +
-            " Modifier Gate: " +
+            " Modifier Gate kullandı: " +
             brickAmount +
             " | Yeni Stack: " +
             target.CurrentBrickCount
+        );
+
+
+        // =================================================
+        // GATE'İ TAMAMEN KAPAT
+        //
+        // Script Gate_Center üzerinde olduğu için:
+        //
+        // - Collider
+        // - Post_Left
+        // - Post_Right
+        // - Text
+        // - bütün child objeler
+        //
+        // birlikte kapanır.
+        // =================================================
+
+        gameObject.SetActive(
+            false
         );
     }
 }
