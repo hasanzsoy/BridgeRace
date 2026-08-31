@@ -2,190 +2,112 @@ using System;
 
 public static class EventManager
 {
-    // Brick toplandığında
-    public static event Action<CharacterBase, int>
-        OnBrickCollected;
+    public static event Action<CharacterBase, int>OnBrickCollected;
+    public static event Action<CharacterBase, int>OnBrickSpent;
+    public static event Action<CharacterBase, int> OnBrickDropped;
+    public static event Action<CharacterBase> OnCharacterKnockback;
+    public static event Action<CharacterBase> OnCharacterFinished;
+    public static event Action<CharacterBase, int> OnCharacterPlaced;
+    public static event Action OnRaceStarted;
+    public static event Action OnRaceFinished;
+    public static event Action<int, int>OnComboChanged;
+    public static event Action<int>OnComboCompleted;
+    public static event Action<CharacterBase[]>OnLiveRankingChanged;
 
-    // Köprü yaparken Brick harcandığında
-    public static event Action<CharacterBase, int>
-        OnBrickSpent;
+    public static event Action<int>OnGoldChanged;
 
-    // Knockback sonrası Brickler düştüğünde
-    public static event Action<CharacterBase, int>
-        OnBrickDropped;
+    public static event Action<int>OnGoldRewardEarned;
 
-    // Karakter knockback aldığında
-    public static event Action<CharacterBase>
-        OnCharacterKnockback;
+    public static event Action<int, int, int>OnVictoryGoldReward;
 
-    // Karakter FinishTrigger'a girdiğinde
-    public static event Action<CharacterBase>
-        OnCharacterFinished;
+    public static event Action<bool>OnGameSoundChanged;
 
-    // Karakterin yarış sırası belli olduğunda
-    public static event Action<CharacterBase, int>
-        OnCharacterPlaced;
+    public static event Action<bool> OnBrickSoundChanged;
 
-    // Yarış başladığında
-    public static event Action
-        OnRaceStarted;
+    public static event Action<bool>OnBridgeSoundChanged;
 
-    // Bütün yarışçılar bitirdiğinde
-    public static event Action
-        OnRaceFinished;
-
-    // Combo değeri değiştiğinde
-    public static event Action<int, int>
-        OnComboChanged;
-
-    // Combo tamamlandığında
-    public static event Action<int>
-        OnComboCompleted;
-    // Canlı yarış sıralaması
-    public static event Action<CharacterBase[]>
-        OnLiveRankingChanged;
-
-    // Toplam Gold değiştiğinde
-    public static event Action<int>
-        OnGoldChanged;
-
-
-    // Yarıştan Gold kazanıldığında
-    public static event Action<int>
-        OnGoldRewardEarned;
-
-    // Victory ekranındaki Gold ödülü hesaplandığında
-    public static event Action<int, int, int>
-        OnVictoryGoldReward;
-
-
-    public static void BrickCollected(
-        CharacterBase character,
-        int stackCount)
+    public static void BrickCollected(CharacterBase character,int stackCount)
     {
-        OnBrickCollected?.Invoke(
-            character,
-            stackCount
-        );
+        OnBrickCollected?.Invoke(character,stackCount);
+    }
+
+    public static void BrickSpent(CharacterBase character,int stackCount)
+    {
+        OnBrickSpent?.Invoke(character,stackCount);
+    }
+
+    public static void BrickDropped(CharacterBase character,int stackCount)
+    {
+        OnBrickDropped?.Invoke(character,stackCount);
+    }
+
+    public static void CharacterKnockback(CharacterBase character)
+    {
+        OnCharacterKnockback?.Invoke(character);
+    }
+
+    public static void CharacterFinished(CharacterBase character)
+    {
+        OnCharacterFinished?.Invoke(character);
     }
 
 
-
-    public static void BrickSpent(
-        CharacterBase character,
-        int stackCount)
+    public static void CharacterPlaced(CharacterBase character,int place)
     {
-        OnBrickSpent?.Invoke(
-            character,
-            stackCount
-        );
+        OnCharacterPlaced?.Invoke(character,place);
     }
-
-
-    public static void BrickDropped(
-        CharacterBase character,
-        int stackCount)
-    {
-        OnBrickDropped?.Invoke(
-            character,
-            stackCount
-        );
-    }
-
-
-    public static void CharacterKnockback(
-        CharacterBase character)
-    {
-        OnCharacterKnockback?.Invoke(
-            character
-        );
-    }
-
-
-    public static void CharacterFinished(
-        CharacterBase character)
-    {
-        OnCharacterFinished?.Invoke(
-            character
-        );
-    }
-
-
-    public static void CharacterPlaced(
-        CharacterBase character,
-        int place)
-    {
-        OnCharacterPlaced?.Invoke(
-            character,
-            place
-        );
-    }
-
 
     public static void RaceStarted()
     {
         OnRaceStarted?.Invoke();
     }
 
-
     public static void RaceFinished()
     {
         OnRaceFinished?.Invoke();
     }
 
-    public static void ComboChanged(
-    int currentCombo,
-    int requiredCombo)
+
+    public static void ComboChanged(int currentCombo,int requiredCombo)
     {
-        OnComboChanged?.Invoke(
-            currentCombo,
-            requiredCombo
-        );
+        OnComboChanged?.Invoke(currentCombo,requiredCombo);
     }
 
-
-    public static void ComboCompleted(
-        int bonusBrickAmount)
+    public static void ComboCompleted(int bonusBrickAmount)
     {
-        OnComboCompleted?.Invoke(
-            bonusBrickAmount
-        );
+        OnComboCompleted?.Invoke(bonusBrickAmount);
     }
 
-    public static void LiveRankingChanged(
-    CharacterBase[] ranking)
+    public static void LiveRankingChanged(CharacterBase[] ranking)
     {
-        OnLiveRankingChanged?.Invoke(
-            ranking
-        );
+        OnLiveRankingChanged?.Invoke(ranking);
+    }
+    public static void GoldChanged(int totalGold)
+    {
+        OnGoldChanged?.Invoke(totalGold);
     }
 
-    public static void GoldChanged(
-    int totalGold)
+    public static void GoldRewardEarned(int reward)
     {
-        OnGoldChanged?.Invoke(
-            totalGold
-        );
+        OnGoldRewardEarned?.Invoke(reward);
     }
 
-
-    public static void GoldRewardEarned(
-        int reward)
+    public static void VictoryGoldReward(int oldGold,int rewardGold,int newTotalGold)
     {
-        OnGoldRewardEarned?.Invoke(
-            reward
-        );
+        OnVictoryGoldReward?.Invoke(oldGold,rewardGold,newTotalGold);
     }
 
-    public static void VictoryGoldReward(
-    int oldGold,
-    int rewardGold,
-    int newTotalGold)
+    public static void GameSoundChanged(bool enabled)
     {
-        OnVictoryGoldReward?.Invoke(
-            oldGold,
-            rewardGold,
-            newTotalGold
-        );
+        OnGameSoundChanged?.Invoke(enabled);
+    }
+
+    public static void BrickSoundChanged(bool enabled)
+    {
+        OnBrickSoundChanged?.Invoke(enabled);
+    }
+    public static void BridgeSoundChanged(bool enabled)
+    {
+        OnBridgeSoundChanged?.Invoke(enabled);
     }
 }
