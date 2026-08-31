@@ -2,21 +2,43 @@ using UnityEngine;
 
 public class CharacterCollisionDetector : MonoBehaviour
 {
+    // =====================================================
+    // IMPACT SETTINGS
+    // =====================================================
+
     [Header("Impact Settings")]
-    [SerializeField] private float minimumImpactSpeed = 3.5f;
 
-    [SerializeField] private float horizontalKnockbackForce = 6.5f;
+    [SerializeField]
+    private float minimumImpactSpeed = 3.5f;
 
-    [SerializeField] private float upwardKnockbackForce = 1.8f;
+    [SerializeField]
+    private float horizontalKnockbackForce = 6.5f;
 
+    [SerializeField]
+    private float upwardKnockbackForce = 1.8f;
+
+
+    // =====================================================
+    // REFERENCES
+    // =====================================================
 
     private CharacterStack myStack;
 
+    private CharacterBase myCharacter;
+
+
+    // =====================================================
+    // AWAKE
+    // =====================================================
 
     private void Awake()
     {
         myStack =
             GetComponent<CharacterStack>();
+
+
+        myCharacter =
+            GetComponent<CharacterBase>();
 
 
         if (myStack == null)
@@ -26,41 +48,86 @@ public class CharacterCollisionDetector : MonoBehaviour
                 " üzerinde CharacterStack bulunamadı!"
             );
         }
+
+
+        if (myCharacter == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " üzerinde CharacterBase bulunamadı!"
+            );
+        }
     }
 
+
+    // =====================================================
+    // COLLISION
+    // =====================================================
 
     private void OnCollisionEnter(
         Collision collision)
     {
-        // Çok hafif temaslarda knockback olmasın.
-        if (collision.relativeVelocity.magnitude <
-            minimumImpactSpeed)
-        {
-            return;
-        }
+        // =================================================
+        // ÇARPTIĞIMIZ NESNE YARIŞÇI MI?
+        // =================================================
 
-
-        // Çarptığımız nesne bir yarışçı mı?
-        if (!collision.collider.TryGetComponent<CharacterBase>(
+        if (!collision.collider
+            .TryGetComponent<CharacterBase>(
                 out CharacterBase otherCharacter))
         {
             return;
         }
 
 
-        // Diğer karakterin stack sistemini bul.
-        if (!collision.collider.TryGetComponent<CharacterStack>(
+        // =================================================
+        // DİĞER KARAKTERİN STACK'İ
+        // =================================================
+
+        if (!collision.collider
+            .TryGetComponent<CharacterStack>(
                 out CharacterStack otherStack))
         {
             return;
         }
 
 
-        if (myStack == null)
+        if (myStack == null ||
+            myCharacter == null)
         {
             return;
         }
 
+
+        // =================================================
+        // HARD AI ÖZEL DURUMU
+        //
+        // Normal çarpışmalarda minimum hız şartımız
+        // devam ediyor.
+        //
+        // Fakat Hard AI bilinçli olarak Player'a
+        // saldırıyorsa dibine geldiğinde hız düşse bile
+        // çarpışmanın çalışmasına izin veriyoruz.
+        //
+        // Bu sayede AI Player'a yapışıp itmez.
+        // =================================================
+
+        bool hardAIAttack =
+            IsHardAIPlayerCollision(
+                otherCharacter
+            );
+
+
+        if (!hardAIAttack &&
+            collision.relativeVelocity.magnitude <
+            minimumImpactSpeed)
+        {
+            return;
+        }
+
+
+        // =================================================
+        // BRICK COUNTS
+        // =================================================
 
         int myBrickCount =
             myStack.BrickCount;
@@ -70,7 +137,8 @@ public class CharacterCollisionDetector : MonoBehaviour
             otherStack.BrickCount;
 
 
-        // Brick sayıları eşitse kimse kaybetmez.
+        // Brick sayıları eşitse
+        // kimse Knockback yemez.
         if (myBrickCount ==
             otherBrickCount)
         {
@@ -78,12 +146,14 @@ public class CharacterCollisionDetector : MonoBehaviour
         }
 
 
-        // Benim Brick sayım daha azsa
-        // diğer karakterin CollisionDetector'ı
-        // beni düşürecek.
+        // =================================================
+        // BENİM BRICK SAYIM DAHA AZ
         //
-        // Bu sayede aynı çarpışmada
-        // iki defa knockback çağrılmıyor.
+        // Bu CollisionDetector Knockback uygulamaz.
+        //
+        // Diğer karakterin detector'ı bu işlemi yapar.
+        // =================================================
+
         if (myBrickCount <
             otherBrickCount)
         {
@@ -91,25 +161,29 @@ public class CharacterCollisionDetector : MonoBehaviour
         }
 
 
-        // Buraya geldiysek:
-        //
-        // Benim Brick sayım daha fazla.
-        // Diğer karakter kaybetti.
+        // =================================================
+        // BENİM BRICK SAYIM DAHA FAZLA
+        // =================================================
 
-
-        if (!collision.collider.TryGetComponent<IKnockbackable>(
+        if (!collision.collider
+            .TryGetComponent<IKnockbackable>(
                 out IKnockbackable knockbackable))
         {
             return;
         }
 
 
+        // =================================================
+        // KNOCKBACK DIRECTION
+        // =================================================
+
         Vector3 direction =
             otherCharacter.transform.position -
             transform.position;
 
 
-        direction.y = 0f;
+        direction.y =
+            0f;
 
 
         if (direction.sqrMagnitude <
@@ -123,6 +197,10 @@ public class CharacterCollisionDetector : MonoBehaviour
         direction.Normalize();
 
 
+        // =================================================
+        // KNOCKBACK FORCE
+        // =================================================
+
         Vector3 knockbackForce =
             direction *
             horizontalKnockbackForce;
@@ -132,6 +210,10 @@ public class CharacterCollisionDetector : MonoBehaviour
             Vector3.up *
             upwardKnockbackForce;
 
+
+        // =================================================
+        // KNOCKBACK
+        // =================================================
 
         knockbackable.TakeKnockback(
             knockbackForce
@@ -150,5 +232,38 @@ public class CharacterCollisionDetector : MonoBehaviour
             otherCharacter.gameObject.name +
             " Knockback!"
         );
+    }
+
+
+    // =====================================================
+    // HARD AI → PLAYER COLLISION
+    // =====================================================
+
+    private bool IsHardAIPlayerCollision(
+        CharacterBase otherCharacter)
+    {
+        // Sadece Hard difficulty.
+        if (GameSettings.SelectedDifficulty !=
+            AIDifficulty.Hard)
+        {
+            return false;
+        }
+
+
+        // Çarpan karakter AI olmalı.
+        if (!(myCharacter is AIController))
+        {
+            return false;
+        }
+
+
+        // Çarpılan karakter Player olmalı.
+        if (!(otherCharacter is PlayerController))
+        {
+            return false;
+        }
+
+
+        return true;
     }
 }
