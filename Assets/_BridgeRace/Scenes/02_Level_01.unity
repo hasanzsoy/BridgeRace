@@ -16274,12 +16274,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800809427}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.7, z: 46}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6999998, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1889456206}
+  m_Father: {fileID: 1895241428}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &800809429
 BoxCollider:
@@ -16314,7 +16314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a10461f42bf7b184c9cca36264a76fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrickSpawner
-  spawnMode: 0
+  spawnMode: 1
   brickPoolManager: {fileID: 355835632}
   spawnArea: {fileID: 800809429}
   blueBrickAmount: 28
@@ -36437,7 +36437,6 @@ Transform:
   m_Children:
   - {fileID: 1737962324}
   - {fileID: 1177964737}
-  - {fileID: 800809428}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1894863104 stripped
@@ -36561,6 +36560,7 @@ Transform:
   - {fileID: 1164889660}
   - {fileID: 1351094259}
   - {fileID: 649025415}
+  - {fileID: 800809428}
   - {fileID: 630767696}
   - {fileID: 1501037805}
   - {fileID: 359782549}
