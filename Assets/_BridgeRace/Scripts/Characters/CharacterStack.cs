@@ -4,32 +4,45 @@ using UnityEngine;
 
 public class CharacterStack : MonoBehaviour, IBrickModifierTarget
 {
+
     [Header("References")]
-    [SerializeField] private Transform stackPoint;
-    [SerializeField] private BrickPoolManager brickPoolManager;
+    [SerializeField]
+    private Transform stackPoint;
+
+    [SerializeField]
+    private BrickPoolManager brickPoolManager;
 
     [Header("Stack Settings")]
-    [SerializeField] private float verticalSpacing = 0.19f;
+    [SerializeField]
+    private float verticalSpacing = 0.19f;
 
     [Header("Collect Animation")]
-    [SerializeField] private float collectDuration = 0.25f;
-    [SerializeField] private float jumpPower = 0.5f;
+    [SerializeField]
+    private float collectDuration = 0.25f;
+
+    [SerializeField]
+    private float jumpPower = 0.5f;
 
     [Header("Drop Settings")]
-    [SerializeField] private float dropDuration = 0.35f;
-    [SerializeField] private float dropJumpPower = 0.6f;
+    [SerializeField]
+    private float dropDuration = 0.35f;
 
-    [SerializeField] private float dropMinDistance = 1.3f;
-    [SerializeField] private float dropMaxDistance = 2.2f;
+    [SerializeField]
+    private float dropJumpPower = 0.6f;
 
-    [SerializeField] private float dropGroundOffset = 0.875f;
+    [SerializeField]
+    private float dropMinDistance = 1.3f;
 
+    [SerializeField]
+    private float dropMaxDistance = 2.2f;
 
-    private List<Brick> collectedBricks =
+    [SerializeField]
+    private float dropGroundOffset = 0.875f;
+
+    private readonly List<Brick> collectedBricks =
         new List<Brick>();
 
     private CharacterBase ownerCharacter;
-
 
     public int BrickCount =>
         collectedBricks.Count;
@@ -37,7 +50,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
 
     public int CurrentBrickCount =>
         BrickCount;
-
 
     private void Awake()
     {
@@ -79,11 +91,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
         }
     }
 
-
-    // ==========================================
-    // NORMAL BRICK TOPLAMA
-    // ==========================================
-
     public void AddBrick(Brick brick)
     {
         if (brick == null)
@@ -97,10 +104,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             return;
         }
 
-
-        // Brick stack'e geldiğinde collider kapalı olmalı.
-        // +7 kapısında Brick direkt Pool'dan geldiği
-        // için özellikle gerekli.
         if (brick.TryGetComponent<Collider>(
                 out Collider brickCollider))
         {
@@ -140,7 +143,9 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             1,
             collectDuration
         )
-        .SetEase(Ease.OutQuad);
+        .SetEase(
+            Ease.OutQuad
+        );
 
 
         brick.transform.DOLocalRotate(
@@ -154,11 +159,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             BrickCount
         );
     }
-
-
-    // ==========================================
-    // BRIDGE YAPARKEN 1 BRICK HARCA
-    // ==========================================
 
     public bool TrySpendBrick()
     {
@@ -204,12 +204,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
         return true;
     }
 
-
-    // ==========================================
-    // KNOCKBACK
-    // BRICKLERİ YERE SAÇ
-    // ==========================================
-
     public int DropBricks(int amount)
     {
         if (amount <= 0)
@@ -238,7 +232,9 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             );
 
 
-        for (int i = 0; i < dropCount; i++)
+        for (int i = 0;
+             i < dropCount;
+             i++)
         {
             int lastIndex =
                 collectedBricks.Count - 1;
@@ -305,7 +301,9 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
                 1,
                 dropDuration
             )
-            .SetEase(Ease.OutQuad)
+            .SetEase(
+                Ease.OutQuad
+            )
             .OnComplete(
                 brickToDrop.EnableCollection
             );
@@ -333,11 +331,6 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
 
         return dropCount;
     }
-
-
-    // ==========================================
-    // +7 / +X MODIFIER GATE
-    // ==========================================
 
     public void AddBricks(int amount)
     {
@@ -373,7 +366,9 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             ownerCharacter.CharacterTeamColor;
 
 
-        for (int i = 0; i < amount; i++)
+        for (int i = 0;
+             i < amount;
+             i++)
         {
             Brick newBrick =
                 brickPoolManager.GetBrickFromPool(
@@ -381,15 +376,13 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
                 );
 
 
-            // Pool boşaldıysa daha fazla Brick ekleme.
+            // Pool boşaldıysa daha fazla ekleme.
             if (newBrick == null)
             {
                 break;
             }
 
 
-            // Brick önce karakterin bulunduğu
-            // noktadan stack'e doğru uçsun.
             newBrick.transform.position =
                 transform.position +
                 Vector3.up * 0.5f;
@@ -399,11 +392,13 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
                 Quaternion.identity;
 
 
+            // Gate sistemi eskisi gibi normal AddBrick kullanıyor.
             AddBrick(
                 newBrick
             );
         }
     }
+
     public void AddBonusBricks(int amount)
     {
         if (amount <= 0)
@@ -413,39 +408,36 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
 
         if (brickPoolManager == null)
         {
+            Debug.LogError(gameObject.name +" için BrickPoolManager bulunamadı!");
+
             return;
         }
 
         if (ownerCharacter == null)
         {
+            Debug.LogError(gameObject.name +" için CharacterBase bulunamadı!");
+
             return;
         }
 
-        TeamColor characterColor =
-            ownerCharacter.CharacterTeamColor;
 
-        for (int i = 0; i < amount; i++)
+        TeamColor characterColor = ownerCharacter.CharacterTeamColor;
+
+
+        for (int i = 0;i < amount;i++)
         {
-            Brick newBrick =
-                brickPoolManager.GetBrickFromPool(
-                    characterColor
-                );
+            Brick newBrick = brickPoolManager.GetBrickFromPool(characterColor);
 
             if (newBrick == null)
             {
                 break;
             }
 
-            newBrick.transform.position =
-                transform.position +
-                Vector3.up * 0.5f;
+            newBrick.transform.position = transform.position + Vector3.up * 0.5f;
 
-            newBrick.transform.rotation =
-                Quaternion.identity;
+            newBrick.transform.rotation = Quaternion.identity;
 
-            AddBonusBrick(
-                newBrick
-            );
+            AddBonusBrick(newBrick);
         }
     }
 
@@ -461,51 +453,26 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             return;
         }
 
-        if (brick.TryGetComponent<Collider>(
-                out Collider brickCollider))
+        if (brick.TryGetComponent<Collider>(out Collider brickCollider))
         {
-            brickCollider.enabled =
-                false;
+            brickCollider.enabled = false;
         }
 
-        int brickIndex =
-            collectedBricks.Count;
+        int brickIndex = collectedBricks.Count;
 
-        collectedBricks.Add(
-            brick
-        );
+        collectedBricks.Add(brick);
 
-        Vector3 targetLocalPosition =
-            new Vector3(
-                0f,
-                brickIndex * verticalSpacing,
-                0f
-            );
+        Vector3 targetLocalPosition =new Vector3(0f,brickIndex * verticalSpacing,0f);
 
         brick.transform.DOKill();
 
-        brick.transform.SetParent(
-            stackPoint,
-            true
-        );
+        brick.transform.SetParent(stackPoint,true);
 
-        brick.transform.DOLocalJump(
-            targetLocalPosition,
-            jumpPower,
-            1,
-            collectDuration
-        )
-        .SetEase(Ease.OutQuad);
+        brick.transform.DOLocalJump(targetLocalPosition,jumpPower,1,collectDuration).SetEase(Ease.OutQuad);
 
-        brick.transform.DOLocalRotate(
-            Vector3.zero,
-            collectDuration
-        );
+        brick.transform.DOLocalRotate(Vector3.zero,collectDuration);
+
     }
-
-    // ==========================================
-    // -5 / -10 MODIFIER GATE
-    // ==========================================
 
     public void RemoveBricks(int amount)
     {
@@ -514,55 +481,33 @@ public class CharacterStack : MonoBehaviour, IBrickModifierTarget
             return;
         }
 
-
         if (brickPoolManager == null)
         {
             return;
         }
-
 
         if (collectedBricks.Count <= 0)
         {
             return;
         }
 
+        int removeCount = Mathf.Min(amount,collectedBricks.Count);
 
-        int removeCount =
-            Mathf.Min(
-                amount,
-                collectedBricks.Count
-            );
-
-
-        for (int i = 0; i < removeCount; i++)
+        for (int i = 0;i < removeCount;i++)
         {
-            int lastIndex =
-                collectedBricks.Count - 1;
+            int lastIndex = collectedBricks.Count - 1;
 
 
-            Brick brickToRemove =
-                collectedBricks[lastIndex];
+            Brick brickToRemove = collectedBricks[lastIndex];
 
-
-            collectedBricks.RemoveAt(
-                lastIndex
-            );
-
+            collectedBricks.RemoveAt(lastIndex);
 
             brickToRemove.transform.DOKill();
 
-
-            // Negatif gate'te Brick yere saçılmaz.
-            // Direkt Pool'a geri döner.
-            brickPoolManager.ReturnBrickToPool(
-                brickToRemove
-            );
+            brickPoolManager.ReturnBrickToPool(brickToRemove);
         }
 
 
-        EventManager.BrickSpent(
-            ownerCharacter,
-            BrickCount
-        );
+        EventManager.BrickSpent(ownerCharacter,BrickCount);
     }
 }
