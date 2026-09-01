@@ -4605,7 +4605,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 67, y: -74}
+  m_AnchoredPosition: {x: 65, y: -70}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &219961131
@@ -11374,7 +11374,6 @@ RectTransform:
   m_Children:
   - {fileID: 378391902}
   - {fileID: 1263173311}
-  - {fileID: 669132603}
   - {fileID: 938656208}
   m_Father: {fileID: 1143403769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15041,7 +15040,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 669132602}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -15049,11 +15048,11 @@ RectTransform:
   - {fileID: 750835322}
   - {fileID: 1089127127}
   - {fileID: 121381087}
-  m_Father: {fileID: 506074284}
+  m_Father: {fileID: 1143403769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -50.69995, y: -55}
+  m_AnchoredPosition: {x: -50, y: -55}
   m_SizeDelta: {x: 235, y: 105}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &669132604
@@ -15125,10 +15124,10 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 95
+  m_SortingOrder: 99
   m_TargetDisplay: 0
 --- !u!1001 &670772559
 PrefabInstance:
@@ -26141,8 +26140,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -27301,6 +27300,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 669132603}
   - {fileID: 506074284}
   m_Father: {fileID: 1748945982}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
