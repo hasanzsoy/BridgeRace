@@ -4,21 +4,26 @@ using UnityEngine;
 public class VictoryPanelAnimation : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private RectTransform victoryText;
-    [SerializeField] private RectTransform continueButton;
+
+    [SerializeField]
+    private CanvasGroup canvasGroup;
+
+    [SerializeField]
+    private RectTransform victoryText;
 
     [Header("Animation Settings")]
-    [SerializeField] private float fadeDuration = 0.35f;
-    [SerializeField] private float textDuration = 0.45f;
-    [SerializeField] private float buttonDuration = 0.35f;
+
+    [SerializeField]
+    private float fadeDuration = 0.35f;
+
+    [SerializeField]
+    private float textDuration = 0.45f;
 
     private void Awake()
     {
         if (canvasGroup == null)
         {
-            canvasGroup =
-                GetComponent<CanvasGroup>();
+            canvasGroup = GetComponent<CanvasGroup>();
         }
     }
 
@@ -35,40 +40,17 @@ public class VictoryPanelAnimation : MonoBehaviour
 
             canvasGroup.alpha = 0f;
 
-            canvasGroup
-                .DOFade(1f, fadeDuration)
-                .SetEase(Ease.OutQuad);
+            canvasGroup.DOFade(1f,fadeDuration).SetEase(Ease.OutQuad);
         }
 
         if (victoryText != null)
         {
             victoryText.DOKill();
 
-            victoryText.localScale =
-                Vector3.zero;
+            victoryText.localScale = Vector3.zero;
 
-            victoryText
-                .DOScale(
-                    Vector3.one,
-                    textDuration
-                )
-                .SetEase(Ease.OutBack);
+            victoryText.DOScale(Vector3.one,textDuration).SetEase(Ease.OutBack);
         }
 
-        if (continueButton != null)
-        {
-            continueButton.DOKill();
-
-            continueButton.localScale =
-                Vector3.zero;
-
-            continueButton
-                .DOScale(
-                    Vector3.one,
-                    buttonDuration
-                )
-                .SetDelay(0.25f)
-                .SetEase(Ease.OutBack);
-        }
     }
 }
