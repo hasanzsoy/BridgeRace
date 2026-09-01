@@ -922,7 +922,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 45621345}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1036732764}
+        m_TargetAssemblyTypeName: PreRaceUpgradeController, Assembly-CSharp
+        m_MethodName: BuySpeed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &45621345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25028,6 +25040,7 @@ MonoBehaviour:
   pauseButton: {fileID: 219961129}
   upgradeController: {fileID: 1036732764}
   magnetDuration: 5
+  speedDuration: 3
 --- !u!114 &1036732764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25043,10 +25056,13 @@ MonoBehaviour:
   brickPrice: 200
   maximumStartingBricks: 5
   magnetPrice: 300
+  speedPrice: 250
   startingBrickAmountText: {fileID: 932616902}
   brickBuyButton: {fileID: 1027211705}
   magnetStateText: {fileID: 492750812}
   magnetBuyButton: {fileID: 823949034}
+  speedStateText: {fileID: 273413904}
+  speedBuyButton: {fileID: 45621344}
   feedbackText: {fileID: 2117474936}
 --- !u!1 &1044185152
 GameObject:
@@ -35028,6 +35044,20 @@ MonoBehaviour:
   collectDistance: 0.55
   scanInterval: 0.08
   magnetVisual: {fileID: 0}
+--- !u!114 &1529557667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1529557641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabecce2d4d12d04cb532eda1de7df42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpeedPowerUp
+  speedMultiplier: 1.5
+  speedVisual: {fileID: 0}
 --- !u!1 &1534073307
 GameObject:
   m_ObjectHideFlags: 0
@@ -46912,6 +46942,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1529557666}
+    - targetCorrespondingSourceObject: {fileID: 561359722331499075, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1529557667}
   m_SourcePrefab: {fileID: 100100000, guid: 5670b8dd71fef9649bbd17e2dc69d0d0, type: 3}
 --- !u!114 &1126810097801194189 stripped
 MonoBehaviour:

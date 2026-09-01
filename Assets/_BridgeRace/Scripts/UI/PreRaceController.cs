@@ -37,6 +37,9 @@ public class PreRaceController : MonoBehaviour
     [SerializeField]
     private float magnetDuration = 5f;
 
+    [SerializeField]
+    private float speedDuration = 3f;
+
 
     // =====================================================
     // CHARACTER REFERENCES
@@ -47,6 +50,8 @@ public class PreRaceController : MonoBehaviour
     private CharacterStack playerStack;
 
     private PlayerMagnetPowerUp playerMagnetPowerUp;
+
+    private PlayerSpeedPowerUp playerSpeedPowerUp;
 
     private AIController[] aiControllers;
 
@@ -88,6 +93,10 @@ public class PreRaceController : MonoBehaviour
 
             playerMagnetPowerUp =
                 player.GetComponent<PlayerMagnetPowerUp>();
+
+
+            playerSpeedPowerUp =
+                player.GetComponent<PlayerSpeedPowerUp>();
         }
 
 
@@ -108,7 +117,6 @@ public class PreRaceController : MonoBehaviour
             false;
 
 
-        // PreRace ekranı açık.
         if (preRacePanel != null)
         {
             preRacePanel.SetActive(
@@ -117,7 +125,6 @@ public class PreRaceController : MonoBehaviour
         }
 
 
-        // Yarış başlamadan joystick yok.
         if (joystickTouchArea != null)
         {
             joystickTouchArea.SetActive(
@@ -126,7 +133,6 @@ public class PreRaceController : MonoBehaviour
         }
 
 
-        // Yarış başlamadan Pause yok.
         if (pauseButton != null)
         {
             pauseButton.SetActive(
@@ -135,20 +141,12 @@ public class PreRaceController : MonoBehaviour
         }
 
 
-        // =============================================
-        // PLAYER BEKLESİN
-        // =============================================
-
         if (player != null)
         {
             player.enabled =
                 false;
         }
 
-
-        // =============================================
-        // AI'LAR BEKLESİN
-        // =============================================
 
         if (aiControllers != null)
         {
@@ -186,7 +184,7 @@ public class PreRaceController : MonoBehaviour
 
 
         // =================================================
-        // UPGRADE'LARI HAZIRLA
+        // UPGRADE DURUMLARI
         // =================================================
 
         int startingBrickAmount =
@@ -197,29 +195,30 @@ public class PreRaceController : MonoBehaviour
             false;
 
 
+        bool speedReady =
+            false;
+
+
         if (upgradeController != null)
         {
-            // =============================================
-            // STARTING BRICKS
-            // =============================================
-
             startingBrickAmount =
                 upgradeController
                 .ConsumeStartingBricks();
 
 
-            // =============================================
-            // MAGNET
-            // =============================================
-
             magnetReady =
                 upgradeController
                 .ConsumeMagnet();
+
+
+            speedReady =
+                upgradeController
+                .ConsumeSpeed();
         }
 
 
         // =================================================
-        // STARTING BRICKLERİ VER
+        // STARTING BRICKS
         // =================================================
 
         if (playerStack != null &&
@@ -232,7 +231,7 @@ public class PreRaceController : MonoBehaviour
 
 
         // =================================================
-        // PRE-RACE UI KAPAT
+        // PRE-RACE UI
         // =================================================
 
         if (preRacePanel != null)
@@ -244,7 +243,7 @@ public class PreRaceController : MonoBehaviour
 
 
         // =================================================
-        // PLAYER AÇ
+        // PLAYER
         // =================================================
 
         if (player != null)
@@ -255,7 +254,7 @@ public class PreRaceController : MonoBehaviour
 
 
         // =================================================
-        // AI'LARI AÇ
+        // AI
         // =================================================
 
         if (aiControllers != null)
@@ -301,7 +300,7 @@ public class PreRaceController : MonoBehaviour
 
 
         // =================================================
-        // RACE START EVENT
+        // RACE EVENT
         // =================================================
 
         EventManager.RaceStarted();
@@ -323,8 +322,27 @@ public class PreRaceController : MonoBehaviour
             else
             {
                 Debug.LogWarning(
-                    "Magnet satın alındı fakat Player üzerinde " +
+                    "Magnet satın alındı fakat " +
                     "PlayerMagnetPowerUp bulunamadı!"
+                );
+            }
+        }
+
+
+        if (speedReady)
+        {
+            if (playerSpeedPowerUp != null)
+            {
+                playerSpeedPowerUp
+                    .ActivateSpeedBoost(
+                        speedDuration
+                    );
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "Speed satın alındı fakat " +
+                    "PlayerSpeedPowerUp bulunamadı!"
                 );
             }
         }

@@ -28,6 +28,16 @@ public class PreRaceUpgradeController : MonoBehaviour
 
 
     // =====================================================
+    // SPEED SETTINGS
+    // =====================================================
+
+    [Header("Speed Settings")]
+
+    [SerializeField]
+    private int speedPrice = 250;
+
+
+    // =====================================================
     // STARTING BRICK UI
     // =====================================================
 
@@ -54,6 +64,19 @@ public class PreRaceUpgradeController : MonoBehaviour
 
 
     // =====================================================
+    // SPEED UI
+    // =====================================================
+
+    [Header("Speed UI")]
+
+    [SerializeField]
+    private TMP_Text speedStateText;
+
+    [SerializeField]
+    private Button speedBuyButton;
+
+
+    // =====================================================
     // GENERAL UI
     // =====================================================
 
@@ -71,6 +94,8 @@ public class PreRaceUpgradeController : MonoBehaviour
 
     private bool magnetPurchased;
 
+    private bool speedPurchased;
+
 
     // =====================================================
     // START
@@ -78,15 +103,16 @@ public class PreRaceUpgradeController : MonoBehaviour
 
     private void Start()
     {
-        // Her yarış başladığında upgrade seçimleri
-        // yeniden sıfırdan başlar.
-        //
-        // Gold kalıcıdır ama satın alınan yarışlık
-        // avantajlar kalıcı değildir.
+        purchasedStartingBricks =
+            0;
 
-        purchasedStartingBricks = 0;
 
-        magnetPurchased = false;
+        magnetPurchased =
+            false;
+
+
+        speedPurchased =
+            false;
 
 
         RefreshAllUI();
@@ -101,7 +127,6 @@ public class PreRaceUpgradeController : MonoBehaviour
 
     public void BuyStartingBrick()
     {
-        // Max 5 kontrolü.
         if (purchasedStartingBricks >=
             maximumStartingBricks)
         {
@@ -117,7 +142,6 @@ public class PreRaceUpgradeController : MonoBehaviour
             SaveManager.LoadGold();
 
 
-        // Gold yeterli mi?
         if (currentGold <
             brickPrice)
         {
@@ -129,7 +153,6 @@ public class PreRaceUpgradeController : MonoBehaviour
         }
 
 
-        // Gold düş.
         int newGold =
             currentGold -
             brickPrice;
@@ -140,7 +163,6 @@ public class PreRaceUpgradeController : MonoBehaviour
         );
 
 
-        // Gold UI event üzerinden güncellensin.
         EventManager.GoldChanged(
             newGold
         );
@@ -164,9 +186,6 @@ public class PreRaceUpgradeController : MonoBehaviour
 
     public void BuyMagnet()
     {
-        // Magnet bu yarış için zaten alındıysa
-        // ikinci kere satın alınamaz.
-
         if (magnetPurchased)
         {
             ShowFeedback(
@@ -181,7 +200,6 @@ public class PreRaceUpgradeController : MonoBehaviour
             SaveManager.LoadGold();
 
 
-        // Gold yeterli değil.
         if (currentGold <
             magnetPrice)
         {
@@ -192,10 +210,6 @@ public class PreRaceUpgradeController : MonoBehaviour
             return;
         }
 
-
-        // =================================================
-        // GOLD DÜŞÜR
-        // =================================================
 
         int newGold =
             currentGold -
@@ -212,11 +226,8 @@ public class PreRaceUpgradeController : MonoBehaviour
         );
 
 
-        // =================================================
-        // MAGNET HAZIR
-        // =================================================
-
-        magnetPurchased = true;
+        magnetPurchased =
+            true;
 
 
         RefreshMagnetUI();
@@ -229,7 +240,66 @@ public class PreRaceUpgradeController : MonoBehaviour
 
 
     // =====================================================
-    // STARTING BRICK GET / CONSUME
+    // BUY SPEED
+    // =====================================================
+
+    public void BuySpeed()
+    {
+        if (speedPurchased)
+        {
+            ShowFeedback(
+                "SPEED ALREADY READY!"
+            );
+
+            return;
+        }
+
+
+        int currentGold =
+            SaveManager.LoadGold();
+
+
+        if (currentGold <
+            speedPrice)
+        {
+            ShowFeedback(
+                "NOT ENOUGH GOLD!"
+            );
+
+            return;
+        }
+
+
+        int newGold =
+            currentGold -
+            speedPrice;
+
+
+        SaveManager.SaveGold(
+            newGold
+        );
+
+
+        EventManager.GoldChanged(
+            newGold
+        );
+
+
+        speedPurchased =
+            true;
+
+
+        RefreshSpeedUI();
+
+
+        ShowFeedback(
+            "SPEED READY!"
+        );
+    }
+
+
+    // =====================================================
+    // STARTING BRICK
     // =====================================================
 
     public int GetPurchasedStartingBricks()
@@ -256,7 +326,7 @@ public class PreRaceUpgradeController : MonoBehaviour
 
 
     // =====================================================
-    // MAGNET GET / CONSUME
+    // MAGNET
     // =====================================================
 
     public bool IsMagnetPurchased()
@@ -267,15 +337,40 @@ public class PreRaceUpgradeController : MonoBehaviour
 
     public bool ConsumeMagnet()
     {
-        // Magnet alınmadıysa false dön.
         if (!magnetPurchased)
         {
             return false;
         }
 
 
-        // Bu yarış için satın alınan Magnet'i tüket.
-        magnetPurchased = false;
+        magnetPurchased =
+            false;
+
+
+        return true;
+    }
+
+
+    // =====================================================
+    // SPEED
+    // =====================================================
+
+    public bool IsSpeedPurchased()
+    {
+        return speedPurchased;
+    }
+
+
+    public bool ConsumeSpeed()
+    {
+        if (!speedPurchased)
+        {
+            return false;
+        }
+
+
+        speedPurchased =
+            false;
 
 
         return true;
@@ -291,11 +386,13 @@ public class PreRaceUpgradeController : MonoBehaviour
         RefreshStartingBrickUI();
 
         RefreshMagnetUI();
+
+        RefreshSpeedUI();
     }
 
 
     // =====================================================
-    // STARTING BRICK UI
+    // BRICK UI
     // =====================================================
 
     private void RefreshStartingBrickUI()
@@ -335,9 +432,31 @@ public class PreRaceUpgradeController : MonoBehaviour
 
         if (magnetBuyButton != null)
         {
-            // Satın alınca buton artık basılamaz.
             magnetBuyButton.interactable =
                 !magnetPurchased;
+        }
+    }
+
+
+    // =====================================================
+    // SPEED UI
+    // =====================================================
+
+    private void RefreshSpeedUI()
+    {
+        if (speedStateText != null)
+        {
+            speedStateText.text =
+                speedPurchased
+                    ? "READY!"
+                    : "READY: NO";
+        }
+
+
+        if (speedBuyButton != null)
+        {
+            speedBuyButton.interactable =
+                !speedPurchased;
         }
     }
 

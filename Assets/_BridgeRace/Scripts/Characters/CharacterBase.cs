@@ -3,37 +3,83 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public abstract class CharacterBase : MonoBehaviour, IRacer
 {
+    // =====================================================
+    // CHARACTER SETTINGS
+    // =====================================================
+
     [Header("Character Settings")]
-    [SerializeField] private TeamColor teamColor = TeamColor.Blue;
+
+    [SerializeField]
+    private TeamColor teamColor = TeamColor.Blue;
+
+
+    // =====================================================
+    // MOVEMENT SETTINGS
+    // =====================================================
 
     [Header("Movement Settings")]
-    [SerializeField] protected float moveSpeed = 5f;
-    [SerializeField] protected float rotationSpeed = 12f;
+
+    [SerializeField]
+    protected float moveSpeed = 5f;
+
+    [SerializeField]
+    protected float rotationSpeed = 12f;
+
+
+    // =====================================================
+    // REFERENCES
+    // =====================================================
 
     protected Rigidbody rb;
 
-    // ÖNEMLİ:
-    // AIController da bu referansı kullanacağı için
-    // private değil protected.
     protected CharacterBridgeBuilder bridgeBuilder;
 
+
+    // =====================================================
+    // MOVEMENT RUNTIME
+    // =====================================================
+
     private Vector3 moveDirection;
+
     private bool movementEnabled = true;
 
 
-    public TeamColor CharacterTeamColor => teamColor;
-    public TeamColor RacerColor => teamColor;
+    // =====================================================
+    // PUBLIC VALUES
+    // =====================================================
 
+    public TeamColor CharacterTeamColor =>
+        teamColor;
+
+
+    public TeamColor RacerColor =>
+        teamColor;
+
+
+    // Speed Power-Up için mevcut hızı
+    // dışarıdan okuyabiliriz.
+    public float CurrentMoveSpeed =>
+        moveSpeed;
+
+
+    // =====================================================
+    // AWAKE
+    // =====================================================
 
     protected virtual void Awake()
     {
         rb =
             GetComponent<Rigidbody>();
 
+
         bridgeBuilder =
             GetComponent<CharacterBridgeBuilder>();
     }
 
+
+    // =====================================================
+    // FIXED UPDATE
+    // =====================================================
 
     protected virtual void FixedUpdate()
     {
@@ -43,8 +89,8 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
         }
 
 
-        // Hareket etmeden önce önümüzdeki
-        // köprü basamağını kontrol ediyoruz.
+        // Hareket etmeden önce
+        // köprü basamağını kontrol et.
         if (bridgeBuilder != null)
         {
             bridgeBuilder.RefreshBridgeCheck();
@@ -66,6 +112,10 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
     }
 
 
+    // =====================================================
+    // MOVE DIRECTION
+    // =====================================================
+
     protected void SetMoveDirection(
         Vector3 direction)
     {
@@ -78,7 +128,8 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
         }
 
 
-        direction.y = 0f;
+        direction.y =
+            0f;
 
 
         moveDirection =
@@ -88,6 +139,10 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
             );
     }
 
+
+    // =====================================================
+    // MOVEMENT ENABLE
+    // =====================================================
 
     public void SetMovementEnabled(
         bool enabled)
@@ -103,6 +158,25 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
         }
     }
 
+
+    // =====================================================
+    // MOVE SPEED
+    // =====================================================
+
+    public void SetMoveSpeed(
+        float newSpeed)
+    {
+        moveSpeed =
+            Mathf.Max(
+                0f,
+                newSpeed
+            );
+    }
+
+
+    // =====================================================
+    // ALLOWED MOVE DIRECTION
+    // =====================================================
 
     private Vector3 GetAllowedMoveDirection()
     {
@@ -126,7 +200,8 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
             bridgeBuilder.BlockedDirection;
 
 
-        blockedDirection.y = 0f;
+        blockedDirection.y =
+            0f;
 
 
         if (blockedDirection.sqrMagnitude <
@@ -146,9 +221,8 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
             );
 
 
-        // Karakter yasak olan basamağa
-        // doğru hareket ediyorsa,
-        // o yöndeki hareketi kaldırıyoruz.
+        // Yasak basamağa doğru olan
+        // hareket bileşenini kaldır.
         if (movingTowardBlockedStep > 0f)
         {
             allowedDirection -=
@@ -160,6 +234,10 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
         return allowedDirection;
     }
 
+
+    // =====================================================
+    // MOVE CHARACTER
+    // =====================================================
 
     private void MoveCharacter(
         Vector3 allowedDirection)
@@ -182,6 +260,10 @@ public abstract class CharacterBase : MonoBehaviour, IRacer
             velocity;
     }
 
+
+    // =====================================================
+    // ROTATE CHARACTER
+    // =====================================================
 
     private void RotateCharacter(
         Vector3 allowedDirection)
