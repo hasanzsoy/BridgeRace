@@ -123,19 +123,22 @@ public class AIController : CharacterBase
     private float pointReachedDistance = 0.8f;
 
 
-    [Header("Opponent Behaviour")]
+    // =====================================================
+    // DIFFICULTY DATA - SCRIPTABLE OBJECT
+    // =====================================================
+
+    [Header("Difficulty Data")]
 
     [SerializeField]
-    private float easyAvoidanceRadius = 2.5f;
+    private AIDifficultyData easyDifficultyData;
 
     [SerializeField]
-    private float easyAvoidanceStrength = 2f;
+    private AIDifficultyData normalDifficultyData;
 
     [SerializeField]
-    private float hardAttackRadius = 5f;
+    private AIDifficultyData hardDifficultyData;
 
-    [SerializeField]
-    private int hardBrickAdvantage = 3;
+    private AIDifficultyData currentDifficultyData;
 
 
     // =====================================================
@@ -146,57 +149,6 @@ public class AIController : CharacterBase
 
     [SerializeField]
     private float navMeshSampleDistance = 3f;
-
-
-    // =====================================================
-    // EASY
-    // =====================================================
-
-    [Header("Easy")]
-
-    [SerializeField]
-    private float easyMoveSpeed = 4.2f;
-
-    [SerializeField]
-    private float easySearchInterval = 0.45f;
-
-    [SerializeField]
-    private int easyMinBricks = 5;
-
-    [SerializeField]
-    private int easyMaxBricks = 12;
-
-
-    // =====================================================
-    // NORMAL
-    // =====================================================
-
-    [Header("Normal")]
-
-    [SerializeField]
-    private float normalMoveSpeed = 5f;
-
-    [SerializeField]
-    private float normalSearchInterval = 0.25f;
-
-    [SerializeField]
-    private int normalBrickGoal = 8;
-
-
-    // =====================================================
-    // HARD
-    // =====================================================
-
-    [Header("Hard")]
-
-    [SerializeField]
-    private float hardMoveSpeed = 5.7f;
-
-    [SerializeField]
-    private float hardSearchInterval = 0.12f;
-
-    [SerializeField]
-    private float hardClusterRadius = 4f;
 
 
     // =====================================================
@@ -303,19 +255,33 @@ public class AIController : CharacterBase
             );
 
 
+        difficulty =
+            GameSettings.SelectedDifficulty;
+
+
+        SelectDifficultyData();
+
+
+        if (currentDifficultyData == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " için AI Difficulty Data bulunamadı!"
+            );
+
+            return;
+        }
+
+
         opponentBehaviour =
             new AIOpponentBehaviour(
                 this,
                 characterStack,
-                easyAvoidanceRadius,
-                easyAvoidanceStrength,
-                hardAttackRadius,
-                hardBrickAdvantage
+                currentDifficultyData.avoidanceRadius,
+                currentDifficultyData.avoidanceStrength,
+                currentDifficultyData.attackRadius,
+                currentDifficultyData.brickAdvantage
             );
-
-
-        difficulty =
-            GameSettings.SelectedDifficulty;
 
 
         CreateDifficultyStrategy();
@@ -522,6 +488,56 @@ public class AIController : CharacterBase
     // DIFFICULTY
     // =====================================================
 
+    private void SelectDifficultyData()
+    {
+        switch (difficulty)
+        {
+            case AIDifficulty.Easy:
+
+                currentDifficultyData =
+                    easyDifficultyData;
+
+                break;
+
+
+            case AIDifficulty.Normal:
+
+                currentDifficultyData =
+                    normalDifficultyData;
+
+                break;
+
+
+            case AIDifficulty.Hard:
+
+                currentDifficultyData =
+                    hardDifficultyData;
+
+                break;
+        }
+
+
+        if (currentDifficultyData == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " | " +
+                difficulty +
+                " ScriptableObject atanmadı!"
+            );
+
+            return;
+        }
+
+
+        Debug.Log(
+            gameObject.name +
+            " | ScriptableObject: " +
+            currentDifficultyData.name
+        );
+    }
+
+
     private void ApplyDifficulty()
     {
         if (difficultyStrategy == null)
@@ -592,16 +608,27 @@ public class AIController : CharacterBase
 
     private void CreateDifficultyStrategy()
     {
+        if (currentDifficultyData == null)
+        {
+            Debug.LogError(
+                gameObject.name +
+                " için currentDifficultyData null!"
+            );
+
+            return;
+        }
+
+
         switch (difficulty)
         {
             case AIDifficulty.Easy:
 
                 difficultyStrategy =
                     new EasyDifficultyStrategy(
-                        easyMoveSpeed,
-                        easySearchInterval,
-                        easyMinBricks,
-                        easyMaxBricks
+                        currentDifficultyData.moveSpeed,
+                        currentDifficultyData.searchInterval,
+                        currentDifficultyData.minBrickGoal,
+                        currentDifficultyData.maxBrickGoal
                     );
 
                 break;
@@ -611,9 +638,9 @@ public class AIController : CharacterBase
 
                 difficultyStrategy =
                     new NormalDifficultyStrategy(
-                        normalMoveSpeed,
-                        normalSearchInterval,
-                        normalBrickGoal
+                        currentDifficultyData.moveSpeed,
+                        currentDifficultyData.searchInterval,
+                        currentDifficultyData.minBrickGoal
                     );
 
                 break;
@@ -623,9 +650,9 @@ public class AIController : CharacterBase
 
                 difficultyStrategy =
                     new HardDifficultyStrategy(
-                        hardMoveSpeed,
-                        hardSearchInterval,
-                        bricksNeededForBridge
+                        currentDifficultyData.moveSpeed,
+                        currentDifficultyData.searchInterval,
+                        currentDifficultyData.minBrickGoal
                     );
 
                 break;
@@ -763,7 +790,7 @@ public class AIController : CharacterBase
             CharacterTeamColor,
             difficultyStrategy.SearchMode,
             transform.position,
-            hardClusterRadius
+            currentDifficultyData.clusterRadius
         );
     }
 

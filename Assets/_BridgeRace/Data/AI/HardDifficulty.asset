@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec948b0162b16b499c5467a8b97744c, type: 3}
+  m_Name: HardDifficulty
+  m_EditorClassIdentifier: Assembly-CSharp::AIDifficultyData
+  difficulty: 0
+  moveSpeed: 4
+  searchInterval: 0.5
+  minBrickGoal: 5
+  maxBrickGoal: 8
+  opponentMode: 0
+  avoidanceRadius: 2
+  avoidanceStrength: 1
+  clusterRadius: 3
+  attackRadius: 5
+  brickAdvantage: 3
