@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec948b0162b16b499c5467a8b97744c, type: 3}
   m_Name: NormalDifficulty
   m_EditorClassIdentifier: Assembly-CSharp::AIDifficultyData
-  difficulty: 0
-  moveSpeed: 4
-  searchInterval: 0.5
-  minBrickGoal: 5
+  difficulty: 1
+  moveSpeed: 5
+  searchInterval: 0.25
+  minBrickGoal: 8
   maxBrickGoal: 8
-  opponentMode: 0
-  avoidanceRadius: 2
-  avoidanceStrength: 1
-  clusterRadius: 3
+  clusterRadius: 4
+  avoidanceRadius: 2.5
+  avoidanceStrength: 2
   attackRadius: 5
   brickAdvantage: 3

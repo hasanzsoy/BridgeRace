@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: EasyDifficulty
   m_EditorClassIdentifier: Assembly-CSharp::AIDifficultyData
   difficulty: 0
-  moveSpeed: 4
-  searchInterval: 0.5
+  moveSpeed: 4.2
+  searchInterval: 0.45
   minBrickGoal: 5
-  maxBrickGoal: 8
-  opponentMode: 0
-  avoidanceRadius: 2
-  avoidanceStrength: 1
-  clusterRadius: 3
+  maxBrickGoal: 12
+  clusterRadius: 4
+  avoidanceRadius: 2.5
+  avoidanceStrength: 2
   attackRadius: 5
   brickAdvantage: 3

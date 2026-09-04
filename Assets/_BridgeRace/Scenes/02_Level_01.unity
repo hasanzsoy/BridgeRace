@@ -28369,7 +28369,7 @@ RectTransform:
   m_GameObject: {fileID: 1174484622}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85859, y: 0.85859, z: 0.85859}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1889371763}
@@ -29873,21 +29873,10 @@ MonoBehaviour:
   finishTarget: {fileID: 704149399}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
-  easyAvoidanceRadius: 2.5
-  easyAvoidanceStrength: 2
-  hardAttackRadius: 5
-  hardBrickAdvantage: 3
+  easyDifficultyData: {fileID: 11400000, guid: a18dff3eab6a12a4bbf749098770b005, type: 2}
+  normalDifficultyData: {fileID: 11400000, guid: a5bf6201eb4f550478d2792a7afa275b, type: 2}
+  hardDifficultyData: {fileID: 11400000, guid: e8933b340a5238e4183601121aa8febb, type: 2}
   navMeshSampleDistance: 2.5
-  easyMoveSpeed: 4.2
-  easySearchInterval: 0.45
-  easyMinBricks: 5
-  easyMaxBricks: 12
-  normalMoveSpeed: 5
-  normalSearchInterval: 0.25
-  normalBrickGoal: 8
-  hardMoveSpeed: 5.7
-  hardSearchInterval: 0.12
-  hardClusterRadius: 4
   bridgeStallTime: 0.8
   bridgeProgressThreshold: 0.05
   bridgeLookAhead: 2
@@ -40879,21 +40868,10 @@ MonoBehaviour:
   finishTarget: {fileID: 704149399}
   bricksNeededForBridge: 20
   pointReachedDistance: 0.8
-  easyAvoidanceRadius: 2.5
-  easyAvoidanceStrength: 2
-  hardAttackRadius: 5
-  hardBrickAdvantage: 3
+  easyDifficultyData: {fileID: 11400000, guid: a18dff3eab6a12a4bbf749098770b005, type: 2}
+  normalDifficultyData: {fileID: 11400000, guid: a5bf6201eb4f550478d2792a7afa275b, type: 2}
+  hardDifficultyData: {fileID: 11400000, guid: e8933b340a5238e4183601121aa8febb, type: 2}
   navMeshSampleDistance: 2.5
-  easyMoveSpeed: 4.2
-  easySearchInterval: 0.45
-  easyMinBricks: 5
-  easyMaxBricks: 12
-  normalMoveSpeed: 5
-  normalSearchInterval: 0.25
-  normalBrickGoal: 8
-  hardMoveSpeed: 5.7
-  hardSearchInterval: 0.12
-  hardClusterRadius: 4
   bridgeStallTime: 0.8
   bridgeProgressThreshold: 0.05
   bridgeLookAhead: 2
@@ -47410,21 +47388,10 @@ MonoBehaviour:
   finishTarget: {fileID: 704149399}
   bricksNeededForBridge: 20
   pointReachedDistance: 1.1
-  easyAvoidanceRadius: 2.5
-  easyAvoidanceStrength: 2
-  hardAttackRadius: 5
-  hardBrickAdvantage: 3
+  easyDifficultyData: {fileID: 11400000, guid: a18dff3eab6a12a4bbf749098770b005, type: 2}
+  normalDifficultyData: {fileID: 11400000, guid: a5bf6201eb4f550478d2792a7afa275b, type: 2}
+  hardDifficultyData: {fileID: 11400000, guid: e8933b340a5238e4183601121aa8febb, type: 2}
   navMeshSampleDistance: 2.5
-  easyMoveSpeed: 4.2
-  easySearchInterval: 0.45
-  easyMinBricks: 5
-  easyMaxBricks: 12
-  normalMoveSpeed: 5
-  normalSearchInterval: 0.25
-  normalBrickGoal: 8
-  hardMoveSpeed: 5.7
-  hardSearchInterval: 0.12
-  hardClusterRadius: 4
   bridgeStallTime: 0.2
   bridgeProgressThreshold: 0.015
   bridgeLookAhead: 0.8
